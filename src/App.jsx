@@ -897,7 +897,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
       
       <div className="flex flex-col gap-3 px-1 mt-auto">
         {hasVariants && (
-          <div className="grid grid-cols-3 gap-1.5 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 w-full">
             {item.variants.map(v => (
               <button
                 key={v.name} onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVariant(v); }}
@@ -1602,6 +1602,25 @@ const FavoritesPage = ({ favorites, isFavOpen, onClose, addToCart, toggleFavorit
   );
 };
 
+const ResetConfirmModal = ({ isOpen, onClose, onReset }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#00000080] p-4 animate-fade-in">
+      <div className={`relative w-full max-w-md rounded-3xl ${THEME.cardBg} shadow-2xl p-6`}> 
+        <div className="mb-4">
+          <h2 className="text-2xl font-black text-[#2D241E] dark:text-white">Reset All Data</h2>
+          <p className="mt-3 text-sm leading-relaxed text-[#8A7B72]">Rest all the data - Your Order Histry , Cart items , payments will be reset</p>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-black/10 dark:border-white/10 font-bold text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Back</button>
+          <button onClick={onReset} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors">Reset</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
   const [pwd, setPwd] = useState('');
   if (!isOpen) return null;
@@ -2014,17 +2033,54 @@ export default function App() {
     return [];
   });
 
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_cart')) || [];
+    return [];
+  });
   const [orders, setOrders] = useState([]); 
   
   const [isCartAnimating, setIsCartAnimating] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('brewbite_cart_open') === 'true';
+    return false;
+  });
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [pendingDiscount, setPendingDiscount] = useState(0);
 
   const [isFavOpen, setIsFavOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+
+  const resetAppData = () => {
+    setIsResetConfirmOpen(false);
+    setCart([]);
+    setOrders([]);
+    setOrderHistory([]);
+    setRecentlyOrdered([]);
+    setRecentlyViewed([]);
+    setFavorites([]);
+    setPendingDiscount(0);
+    setIsCartOpen(false);
+    setIsCheckoutOpen(false);
+    setIsBillModalOpen(false);
+    setIsModeModalOpen(true);
+    setOrderMode('Takeaway');
+    setTableNumber('');
+    setIsTableLocked(false);
+
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('brewbite_cart');
+      localStorage.removeItem('brewbite_cart_open');
+      localStorage.removeItem('brewbite_history');
+      localStorage.removeItem('brewbite_ordered');
+      localStorage.removeItem('brewbite_recent');
+      localStorage.removeItem('brewbite_favs');
+      localStorage.removeItem('brewbite_mode');
+      localStorage.removeItem('brewbite_table');
+      localStorage.removeItem('brewbite_mode_set');
+    }
+  };
 
   const [isAdminAuthOpen, setIsAdminAuthOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -2053,6 +2109,8 @@ export default function App() {
   useEffect(() => { localStorage.setItem('brewbite_recent', JSON.stringify(recentlyViewed)); }, [recentlyViewed]);
   useEffect(() => { localStorage.setItem('brewbite_ordered', JSON.stringify(recentlyOrdered)); }, [recentlyOrdered]);
   useEffect(() => { localStorage.setItem('brewbite_history', JSON.stringify(orderHistory)); }, [orderHistory]);
+  useEffect(() => { localStorage.setItem('brewbite_cart', JSON.stringify(cart)); }, [cart]);
+  useEffect(() => { localStorage.setItem('brewbite_cart_open', JSON.stringify(isCartOpen)); }, [isCartOpen]);
   useEffect(() => { 
     if(!isTableLocked) {
       localStorage.setItem('brewbite_mode', orderMode); 
@@ -2325,6 +2383,9 @@ const handlePlaceOrder = (discountAmount) => {
              <button onClick={() => { document.getElementById('order-again')?.scrollIntoView({behavior:'smooth', block: 'start'}); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Package size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Order Again</button>
              
              <div className="mt-auto border-t border-black/10 dark:border-white/10 pt-4 flex flex-col gap-4">
+               <button onClick={() => { setIsResetConfirmOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-lg min-h-[48px]">
+                  <Trash2 size={24}/> Reset App Data
+               </button>
                <button onClick={() => { setIsDarkMode(!isDarkMode); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]">
                   {isDarkMode ? <><Sun size={24}/> Light Mode</> : <><Moon size={24}/> Dark Mode</>}
                </button>
@@ -2413,6 +2474,12 @@ const handlePlaceOrder = (discountAmount) => {
         />
 
        {isStatusOpen && (<OrderStatusScreen activeOrders={myActiveOrders} onClose={() => setIsStatusOpen(false)} />)}
+
+        <ResetConfirmModal
+          isOpen={isResetConfirmOpen}
+          onClose={() => setIsResetConfirmOpen(false)}
+          onReset={resetAppData}
+        />
 
         <AdminLoginModal 
           isOpen={isAdminAuthOpen} 
