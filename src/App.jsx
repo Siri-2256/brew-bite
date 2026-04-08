@@ -562,13 +562,13 @@ const Navbar = ({ cartCount, setIsCartOpen, onAdminClick, unreadNotif, onNotifCl
               )}
             </button>
 
-            {/* Admin and Notif buttons hidden on mobile to save space */}
-            <button onClick={onAdminClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors hidden sm:block">
+            {/* Admin and Notif buttons are visible on mobile and desktop */}
+            <button onClick={onAdminClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
               <Lock size={20} />
               {adminPendingCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{adminPendingCount}</span>}
             </button>
 
-            <button onClick={onNotifClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors hidden sm:block">
+            <button onClick={onNotifClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
               <Bell size={20} className={unreadNotif > 0 ? 'animate-bounce text-[#6F4E37]' : ''} />
               {unreadNotif > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{unreadNotif}</span>}
             </button>
