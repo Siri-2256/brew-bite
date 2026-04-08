@@ -267,7 +267,7 @@ const THEME = {
   cardBg: 'bg-white dark:bg-[#1C1917]',
   primary: 'bg-[#6F4E37] hover:bg-[#5A3E2B] text-white',
   primaryText: 'text-[#6F4E37] dark:text-[#D4B895]',
-  border: 'border-[#EAE6DF] dark:border-white/15',
+  border: 'border-[#EAE6DF] dark:border-white/25',
   muted: 'text-[#8A7B72] dark:text-[#A89F95]'
 };
 
@@ -897,7 +897,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
       
       <div className="flex flex-col gap-3 px-1 mt-auto">
         {hasVariants && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 w-full">
+          <div className="grid grid-cols-3 gap-1.5 w-full">
             {item.variants.map(v => (
               <button
                 key={v.name} onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedVariant(v); }}
@@ -1652,7 +1652,7 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-fade-in bg-[#FAF7F2] dark:bg-[#12100E]">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
         <div className="flex justify-between items-center mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-10 py-4">
-          <h2 className="text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Utensils size={32} className="text-[#6F4E37]"/> Kitchen Dashboard</h2>
+          <h2 className="text-3xl md:text-4xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Utensils size={32} className="text-[#6F4E37]"/> Kitchen Dashboard</h2>
           <button onClick={onClose} className="px-5 py-2 min-h-[48px] bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full hover:bg-red-200 transition-colors font-bold text-sm flex items-center gap-2">
              <Lock size={14}/> Exit & Lock
           </button>
@@ -2383,7 +2383,7 @@ const handlePlaceOrder = (discountAmount) => {
              <button onClick={() => { document.getElementById('order-again')?.scrollIntoView({behavior:'smooth', block: 'start'}); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Package size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Order Again</button>
              
              <div className="mt-auto border-t border-black/10 dark:border-white/10 pt-4 flex flex-col gap-4">
-               <button onClick={() => { setIsResetConfirmOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-lg min-h-[48px]">
+               <button onClick={() => { setIsResetConfirmOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-300 text-red-900 dark:bg-red-700 dark:text-red-100 hover:bg-red-400 dark:hover:bg-red-600 transition-colors font-bold text-lg min-h-[48px]">
                   <Trash2 size={24}/> Reset App Data
                </button>
                <button onClick={() => { setIsDarkMode(!isDarkMode); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]">
@@ -2450,7 +2450,7 @@ const handlePlaceOrder = (discountAmount) => {
         <BillSettlementModal 
           isOpen={isBillModalOpen} 
           onClose={() => setIsBillModalOpen(false)} 
-          orders={myActiveOrders} 
+          orders={orders} 
           onSettleBill={() => {
              // Marks all current unpaid orders for this session as "isPaid: true"
              setOrders(prev => prev.map(o => o.mode === orderMode && o.table === tableNumber && o.status !== 'Rejected' && !o.isPaid ? { ...o, isPaid: true } : o));
