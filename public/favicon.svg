@@ -1,9 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="18" fill="#8e5d38" />
-  <path d="M20 24h22v11a10 10 0 0 1-10 10h-2a10 10 0 0 1-10-10V24Z" fill="#f4ece4" opacity="0.95"/>
-  <path d="M42 27h4a4 4 0 0 1 0 8h-4" stroke="#f4ece4" stroke-width="4" stroke-linecap="round"/>
-  <path d="M18 48h28" stroke="#f4ece4" stroke-width="4" stroke-linecap="round"/>
-  <path d="M24 17c0 2 2 2 2 4s-2 2-2 4" stroke="#f4ece4" stroke-width="3" stroke-linecap="round"/>
-  <path d="M32 17c0 2 2 2 2 4s-2 2-2 4" stroke="#f4ece4" stroke-width="3" stroke-linecap="round"/>
-  <path d="M40 17c0 2 2 2 2 4s-2 2-2 4" stroke="#f4ece4" stroke-width="3" stroke-linecap="round"/>
+  <!-- Background -->
+  <rect width="64" height="64" rx="8" fill="#faf7f2"/>
+  
+  <!-- Mug Body -->
+  <rect x="16" y="22" width="24" height="18" rx="2" fill="#8e5d38"/>
+  
+  <!-- Mug Highlight -->
+  <rect x="18" y="24" width="6" height="14" rx="1" fill="#b8844d" opacity="0.8"/>
+  
+  <!-- Coffee inside -->
+  <rect x="16" y="26" width="24" height="12" rx="1" fill="#6f4e37" opacity="0.6"/>
+  
+  <!-- Mug Handle -->
+  <path d="M 42 26 Q 52 26 52 32 Q 52 38 42 38" stroke="#8e5d38" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Handle Highlight -->
+  <path d="M 44 27 Q 50 27 50 32 Q 50 37 44 37" stroke="#b8844d" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  
+  <!-- Saucer/Base -->
+  <ellipse cx="28" cy="42" rx="14" ry="3" fill="#8e5d38"/>
+  <ellipse cx="28" cy="41.5" rx="14" ry="2.5" fill="#b8844d" opacity="0.5"/>
+  
+  <!-- Coffee Wrapper/Band -->
+  <rect x="14" y="37" width="28" height="4" fill="#f4ece4" opacity="0.9"/>
+  <path d="M 16 36 Q 20 38 24 36 Q 28 38 32 36 Q 36 38 40 36" stroke="#8e5d38" stroke-width="0.5" fill="none" stroke-dasharray="1,1" opacity="0.4"/>
+  
+  <!-- Steam wisps -->
+  <path d="M 20 20 Q 18 16 20 12" stroke="#b8844d" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 28 19 Q 26 14 28 10" stroke="#b8844d" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 36 20 Q 38 15 36 11" stroke="#b8844d" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Text label area -->
+  <text x="28" y="34" font-family="Arial, sans-serif" font-size="3" text-anchor="middle" fill="#f4ece4" opacity="0.8" font-weight="bold">B</text>
 </svg>
