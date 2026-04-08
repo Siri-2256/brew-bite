@@ -521,7 +521,7 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
     </div>
   );
 };
-const Navbar = ({ cartCount, setIsCartOpen, onAdminClick, unreadNotif, onNotifClick, orderMode, tableNumber, onModeChangeClick, adminPendingCount, setIsMobileMenuOpen, isTableLocked }) => {
+const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode, tableNumber, onModeChangeClick, setIsMobileMenuOpen, isTableLocked }) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -560,12 +560,6 @@ const Navbar = ({ cartCount, setIsCartOpen, onAdminClick, unreadNotif, onNotifCl
                   {cartCount}
                 </span>
               )}
-            </button>
-
-            {/* Admin and Notif buttons are visible on mobile and desktop */}
-            <button onClick={onAdminClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-              <Lock size={20} />
-              {adminPendingCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{adminPendingCount}</span>}
             </button>
 
             <button onClick={onNotifClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
@@ -2082,10 +2076,6 @@ export default function App() {
     }
   };
 
-  const [isAdminAuthOpen, setIsAdminAuthOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-  
   const [quickViewItem, setQuickViewItem] = useState(null);
   const [dietFilter, setDietFilter] = useState('All');
   
@@ -2162,7 +2152,6 @@ useEffect(() => {
     });
   }, [orders]);
 
-  const adminPendingCount = useMemo(() => orders.filter(o => o.status === 'Pending').length, [orders]);
   const cartTotal = useMemo(() => cart.reduce((total, item) => total + (item.price * item.quantity), 0), [cart]);
   const cartItemCount = useMemo(() => cart.reduce((count, item) => count + item.quantity, 0), [cart]);
   
@@ -2307,18 +2296,6 @@ const handlePlaceOrder = (discountAmount) => {
     setPendingDiscount(0);
   };
 
-  const handleAcceptOrder = (orderId) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'Accepted' } : o));
-    setOrderHistory(prev => prev.map(o => o.id === orderId ? { ...o, status: 'Accepted' } : o));
-    showToast(`Order #${orderId} Accepted`);
-  };
-
-  const handleRejectOrder = (orderId) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'Rejected' } : o));
-    setOrderHistory(prev => prev.map(o => o.id === orderId ? { ...o, status: 'Rejected' } : o));
-    showToast(`Order #${orderId} Rejected`);
-  };
-
   const handleReorder = (pastOrder) => {
      pastOrder.items.forEach(item => {
         addToCart(item, item.variants?.find(v => v.name === item.variantName), item.desc, item.customizations, item.instructions, item.prepOption);
@@ -2354,13 +2331,11 @@ const handlePlaceOrder = (discountAmount) => {
           isDarkMode={isDarkMode} 
           setIsDarkMode={setIsDarkMode} 
           isCartAnimating={isCartAnimating} 
-          onAdminClick={() => isAdminAuthenticated ? setIsAdminOpen(true) : setIsAdminAuthOpen(true)}
           unreadNotif={unreadNotif}
           onNotifClick={() => { setUnreadNotif(0); if(activeOrderId) setIsStatusOpen(true); else showToast("No active orders to track."); }}
           orderMode={orderMode}
           tableNumber={tableNumber}
           onModeChangeClick={() => setIsModeModalOpen(true)}
-          adminPendingCount={adminPendingCount}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
           isTableLocked={isTableLocked}
         />
@@ -2481,20 +2456,6 @@ const handlePlaceOrder = (discountAmount) => {
           onReset={resetAppData}
         />
 
-        <AdminLoginModal 
-          isOpen={isAdminAuthOpen} 
-          onClose={() => setIsAdminAuthOpen(false)} 
-          onLogin={() => { setIsAdminAuthenticated(true); setIsAdminAuthOpen(false); setIsAdminOpen(true); }} 
-        />
-
-        <AdminPanel 
-          orders={orders} 
-          onAcceptOrder={handleAcceptOrder} 
-          onRejectOrder={handleRejectOrder}
-          isOpen={isAdminOpen} 
-          onClose={() => { setIsAdminOpen(false); setIsAdminAuthenticated(false); }} 
-        />
-        
         <Toast message={toastState.message} visible={toastState.visible} />
       </div>
 
