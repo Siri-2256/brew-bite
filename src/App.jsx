@@ -535,8 +535,8 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, adminBadg
       <div className="w-full mx-auto flex items-center justify-between">
         
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-          <div className="p-1 rounded-xl transition-transform duration-300 group-hover:rotate-12">
-            <img src="/favicon.svg" alt="BrewBite" className="h-10 w-10 rounded-xl object-cover shadow-sm" />
+          <div className={`p-2 rounded-xl transition-transform duration-300 group-hover:rotate-12 ${THEME.primary}`}>
+            <Coffee size={24} strokeWidth={2.5} className="text-white" />
           </div>
           <span className="text-xl font-bold tracking-tight text-[#2D241E] dark:text-white hidden sm:block">Brew<span className="font-light">Bite</span></span>
         </div>
@@ -1905,7 +1905,7 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
 
 
       <div className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transition-opacity duration-300 ${isCartOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsCartOpen(false)} />
-      <div className={`fixed inset-y-0 right-0 w-full sm:w-[420px] ${THEME.cardBg} shadow-2xl z-[60] transform transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed inset-y-0 right-0 w-full sm:w-[420px] ${THEME.cardBg} shadow-2xl z-[60] transform transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col overflow-x-hidden ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         <div className={`px-6 py-5 border-b ${THEME.border} flex items-center justify-between bg-black/[0.02] dark:bg-white/[0.02]`}>
           <h2 className="text-xl font-bold flex items-center gap-2 text-[#2D241E] dark:text-white">
@@ -1916,7 +1916,7 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 hide-scrollbar">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 hide-scrollbar">
           {cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-60">
               <ShoppingBag size={64} strokeWidth={1} className="text-[#2D241E] dark:text-white" />
@@ -1927,9 +1927,9 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
             </div>
           ) : (
             cart.map(item => (
-              <div key={item.uniqueId} className="flex gap-4 items-center animate-fade-in">
+              <div key={item.uniqueId} className="flex gap-4 items-center animate-fade-in w-full min-w-0">
                 <img src={item.image} className="w-20 h-20 rounded-xl object-cover shadow-sm" fetchpriority="high" loading="lazy" />
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 min-w-0 overflow-hidden">
                   <h4 className="font-bold text-base leading-tight text-[#2D241E] dark:text-white truncate">{item.name}</h4>
                   
                   {item.isCombo && item.comboItems && (
@@ -1953,7 +1953,7 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                     <button onClick={() => updateQuantity(item.uniqueId, 1)} className={`p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md border ${THEME.border} hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all text-[#2D241E] dark:text-white`}><Plus size={14} /></button>
                   </div>
                 </div>
-                <div className="flex flex-col items-end justify-between h-20 py-1">
+                <div className="flex flex-col items-end justify-between h-20 py-1 shrink-0">
                   <button onClick={() => removeFromCart(item.uniqueId)} className={`${THEME.muted} hover:text-red-500 p-1 min-h-[36px] min-w-[36px] flex items-center justify-center transition-colors active:scale-95`} title="Remove item"><Trash2 size={16} /></button>
                   <span className="font-bold text-lg text-[#2D241E] dark:text-white">{formatPrice(item.price * item.quantity)}</span>
                 </div>
