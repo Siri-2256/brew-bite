@@ -532,7 +532,7 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, adminBadg
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? `${THEME.cardBg} shadow-sm py-4` : 'bg-transparent py-6'} px-4 md:px-8 lg:px-12 xl:px-24`}>
-      <div className="w-full mx-auto relative flex items-center justify-between">
+      <div className="w-full mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 md:gap-4">
         
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
           <div className="p-1 rounded-xl transition-transform duration-300 group-hover:rotate-12">
@@ -541,15 +541,17 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, adminBadg
           <span className="text-xl font-bold tracking-tight text-[#2D241E] dark:text-white hidden sm:block">Brew<span className="font-light">Bite</span></span>
         </div>
 
-        <div className={`absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-colors max-w-[170px] ${isTableLocked ? 'bg-black/5 dark:bg-white/10 cursor-not-allowed' : 'bg-black/5 dark:bg-white/10 cursor-pointer hover:bg-black/10 dark:hover:bg-white/20'}`} onClick={() => !isTableLocked && onModeChangeClick()}>
-             {orderMode === 'Dine-In' ? <MapPin size={16} className="text-[#6F4E37] dark:text-[#D4B895]"/> : <Package size={16} className="text-[#6F4E37] dark:text-[#D4B895]"/>}
-             <span className="text-xs md:text-sm font-bold text-[#2D241E] dark:text-white truncate max-w-[120px] md:max-w-none">
-               {orderMode === 'Dine-In' ? `Table ${tableNumber}` : 'Takeaway'}
-             </span>
-             {!isTableLocked && <span className="text-[10px] md:text-xs text-[#6F4E37] dark:text-[#D4B895] font-bold ml-1 uppercase hidden sm:block">Change</span>}
+        <div className="flex justify-center px-1">
+          <div className={`flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-colors w-full max-w-[180px] sm:max-w-[240px] md:w-auto md:max-w-none ${isTableLocked ? 'bg-black/5 dark:bg-white/10 cursor-not-allowed' : 'bg-black/5 dark:bg-white/10 cursor-pointer hover:bg-black/10 dark:hover:bg-white/20'}`} onClick={() => !isTableLocked && onModeChangeClick()}>
+               {orderMode === 'Dine-In' ? <MapPin size={16} className="text-[#6F4E37] dark:text-[#D4B895]"/> : <Package size={16} className="text-[#6F4E37] dark:text-[#D4B895]"/>}
+               <span className="text-xs md:text-sm font-bold text-[#2D241E] dark:text-white truncate max-w-[120px] md:max-w-none">
+                 {orderMode === 'Dine-In' ? `Table ${tableNumber}` : 'Takeaway'}
+               </span>
+               {!isTableLocked && <span className="text-[10px] md:text-xs text-[#6F4E37] dark:text-[#D4B895] font-bold ml-1 uppercase hidden sm:block">Change</span>}
+          </div>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2 ml-auto">
+        <div className="flex items-center gap-0.5 sm:gap-2 justify-self-end">
             
             {/* 🔥 NEW CART BUTTON IN NAVBAR 🔥 */}
             <button onClick={() => setIsCartOpen(true)} className="relative p-2 text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors active:scale-95 flex items-center justify-center min-h-[48px] min-w-[48px]">
