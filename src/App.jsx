@@ -532,25 +532,24 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, adminBadg
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? `${THEME.cardBg} shadow-sm py-4` : 'bg-transparent py-6'} px-4 md:px-8 lg:px-12 xl:px-24`}>
-      <div className="w-full mx-auto flex items-center justify-between">
+      <div className="w-full mx-auto relative flex items-center justify-between">
         
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-          <div className={`p-2 rounded-xl transition-transform duration-300 group-hover:rotate-12 ${THEME.primary}`}>
-            <Coffee size={24} strokeWidth={2.5} className="text-white" />
+          <div className="p-1 rounded-xl transition-transform duration-300 group-hover:rotate-12">
+            <img src="/favicon.svg" alt="BrewBite" className="h-10 w-10 rounded-xl object-cover shadow-sm" />
           </div>
           <span className="text-xl font-bold tracking-tight text-[#2D241E] dark:text-white hidden sm:block">Brew<span className="font-light">Bite</span></span>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-6 lg:gap-8">
-          <div className={`flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-colors ${isTableLocked ? 'bg-black/5 dark:bg-white/10 cursor-not-allowed' : 'bg-black/5 dark:bg-white/10 cursor-pointer hover:bg-black/10 dark:hover:bg-white/20'}`} onClick={() => !isTableLocked && onModeChangeClick()}>
+        <div className={`absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-colors max-w-[170px] ${isTableLocked ? 'bg-black/5 dark:bg-white/10 cursor-not-allowed' : 'bg-black/5 dark:bg-white/10 cursor-pointer hover:bg-black/10 dark:hover:bg-white/20'}`} onClick={() => !isTableLocked && onModeChangeClick()}>
              {orderMode === 'Dine-In' ? <MapPin size={16} className="text-[#6F4E37] dark:text-[#D4B895]"/> : <Package size={16} className="text-[#6F4E37] dark:text-[#D4B895]"/>}
              <span className="text-xs md:text-sm font-bold text-[#2D241E] dark:text-white truncate max-w-[120px] md:max-w-none">
                {orderMode === 'Dine-In' ? `Table ${tableNumber}` : 'Takeaway'}
              </span>
              {!isTableLocked && <span className="text-[10px] md:text-xs text-[#6F4E37] dark:text-[#D4B895] font-bold ml-1 uppercase hidden sm:block">Change</span>}
-          </div>
+        </div>
 
-          <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 ml-auto">
             
             {/* 🔥 NEW CART BUTTON IN NAVBAR 🔥 */}
             <button onClick={() => setIsCartOpen(true)} className="relative p-2 text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors active:scale-95 flex items-center justify-center min-h-[48px] min-w-[48px]">
@@ -575,7 +574,6 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, adminBadg
             <button className="p-2 text-[#2D241E] dark:text-white transition-transform hover:bg-black/5 dark:hover:bg-white/10 rounded-full flex items-center justify-center" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu size={24} />
             </button>
-          </div>
         </div>
       </div>
     </nav>
@@ -1328,9 +1326,9 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
               {/* 🔥 APPLY COUPON FIELD ADDED HERE */}
               <div className="pt-2 pb-4 border-b border-black/10 dark:border-white/10">
                 <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-[#2D241E] dark:text-white"><Tag size={16}/> Apply Coupon</h4>
-                <div className="flex gap-2">
-                  <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 px-4 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
-                  <button onClick={handleApplyCoupon} className={`px-4 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
+                <div className="flex items-center gap-2 min-w-0">
+                  <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 min-w-0 px-3 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
+                  <button onClick={handleApplyCoupon} className={`w-[78px] shrink-0 px-3 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
                 </div>
                 {localDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
               </div>
@@ -1964,9 +1962,9 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
           {cart.length > 0 && (
             <div className="pt-6 border-t border-black/10 dark:border-white/10">
               <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-[#2D241E] dark:text-white"><Tag size={16}/> Apply Coupon</h4>
-              <div className="flex gap-2">
-                <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 px-4 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
-                <button onClick={handleApplyCoupon} className={`px-4 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
+              <div className="flex items-center gap-2 min-w-0">
+                <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 min-w-0 px-3 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
+                <button onClick={handleApplyCoupon} className={`w-[78px] shrink-0 px-3 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
               </div>
               {appliedDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
             </div>
@@ -2255,6 +2253,9 @@ useEffect(() => {
         const timeRemaining = Math.max(0, totalWaitMs - timeSpent);
         return setTimeout(() => setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'Ready' } : o)), timeRemaining);
       }
+      if (order.status === 'Ready') {
+        return setTimeout(() => setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'Served' } : o)), 5000);
+      }
       return null;
     });
     return () => activeIntervals.forEach(timer => timer && clearTimeout(timer));
@@ -2328,6 +2329,10 @@ useEffect(() => {
         // Move to 'Ready' ONLY when the exact 'n' minutes have passed since the order was placed
         const timeRemaining = Math.max(0, totalWaitMs - timeSpent);
         return setTimeout(() => setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'Ready' } : o)), timeRemaining);
+      }
+      if (order.status === 'Ready') {
+        // Move to 'Served' 5 seconds after showing Ready
+        return setTimeout(() => setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'Served' } : o)), 5000);
       }
       return null;
     });
