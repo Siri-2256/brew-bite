@@ -535,8 +535,8 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode
       <div className="w-full mx-auto flex items-center justify-between">
         
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-          <div className={`p-2 rounded-xl transition-transform duration-300 group-hover:rotate-12 ${THEME.primary}`}>
-            <Coffee size={24} strokeWidth={2.5} className="text-white" />
+          <div className="p-1 rounded-xl transition-transform duration-300 group-hover:rotate-12">
+            <img src="/favicon.svg" alt="BrewBite" className="h-10 w-10 rounded-xl object-cover shadow-sm" />
           </div>
           <span className="text-xl font-bold tracking-tight text-[#2D241E] dark:text-white hidden sm:block">Brew<span className="font-light">Bite</span></span>
         </div>
@@ -1116,12 +1116,12 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
               </div>
             </div>
 
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide no-scrollbar w-full pt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 w-full pt-2">
               {CATEGORIES.map(category => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`whitespace-nowrap px-6 py-2.5 min-h-[48px] rounded-full text-sm font-semibold transition-all duration-300 ${
+                  className={`w-full px-4 py-2.5 min-h-[48px] rounded-full text-sm font-semibold transition-all duration-300 ${
                     activeCategory === category 
                       ? `${THEME.primary} shadow-md` 
                       : `${THEME.cardBg} border ${THEME.border} hover:border-[#6F4E37] active:scale-95 text-[#2D241E] dark:text-white`
@@ -1229,7 +1229,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
 // 5. CHECKOUT, ORDER TRACKING, HISTORY, & ADMIN
 // ==========================================
 
-const CheckoutModal = ({ isOpen, onClose, cart, cartTotal, cartTax, appliedDiscount, orderMode, tableNumber, onConfirm }) => {
+const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, orderMode, tableNumber, onConfirm }) => {
   const [couponCode, setCouponCode] = useState('');
   const [localDiscount, setLocalDiscount] = useState(0);
 
@@ -1262,7 +1262,7 @@ const CheckoutModal = ({ isOpen, onClose, cart, cartTotal, cartTax, appliedDisco
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#FAF7F2]/90 dark:bg-[#12100E]/90 backdrop-blur-md animate-fade-in overflow-y-auto hide-scrollbar">
        <div className={`w-full max-w-2xl ${THEME.cardBg} rounded-3xl shadow-2xl border ${THEME.border} overflow-hidden flex flex-col`}>
           <div className="p-4 flex justify-end items-center sticky top-0 z-10 bg-transparent">
-             <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center"><X size={20} className="text-[#2D241E] dark:text-white"/></button>
+             <button onClick={onBackToCart} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Back to cart"><X size={20} className="text-[#2D241E] dark:text-white"/></button>
           </div>
 
           <div className="p-6 md:p-8 pt-0 space-y-6">
@@ -2101,6 +2101,15 @@ export default function App() {
     else document.documentElement.classList.remove('dark');
   }, [isDarkMode]);
 
+  useEffect(() => {
+    if (!quickViewItem) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [quickViewItem]);
+
   useEffect(() => { localStorage.setItem('brewbite_favs', JSON.stringify(favorites)); }, [favorites]);
   useEffect(() => { localStorage.setItem('brewbite_recent', JSON.stringify(recentlyViewed)); }, [recentlyViewed]);
   useEffect(() => { localStorage.setItem('brewbite_ordered', JSON.stringify(recentlyOrdered)); }, [recentlyOrdered]);
@@ -2444,6 +2453,10 @@ const handlePlaceOrder = (discountAmount) => {
 <CheckoutModal
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
+          onBackToCart={() => {
+            setIsCheckoutOpen(false);
+            setIsCartOpen(true);
+          }}
           cart={cart}
           cartTotal={cartTotal}
           cartTax={cartTax}
