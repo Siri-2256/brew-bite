@@ -1646,14 +1646,41 @@ const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
 
 const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) => {
   if (!isOpen) return null;
+
+  const pendingCount = orders.filter((order) => order.status === 'Pending').length;
+  const acceptedCount = orders.filter((order) => order.status === 'Accepted').length;
+  const preparingCount = orders.filter((order) => order.status === 'Preparing').length;
+  const readyCount = orders.filter((order) => order.status === 'Ready').length;
+
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-fade-in bg-[#FAF7F2] dark:bg-[#12100E]">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
-        <div className="flex justify-between items-center mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-10 py-4">
-          <h2 className="text-3xl md:text-4xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Utensils size={32} className="text-[#6F4E37]"/> Kitchen Dashboard</h2>
-          <button onClick={onClose} className="px-5 py-2 min-h-[48px] bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full hover:bg-red-200 transition-colors font-bold text-sm flex items-center gap-2">
+        <div className="mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-10 py-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#2D241E] dark:text-white flex items-center gap-3 leading-tight"><Utensils size={30} className="text-[#6F4E37]"/> Kitchen Dashboard</h2>
+            <button onClick={onClose} className="w-full sm:w-auto justify-center px-5 py-2 min-h-[48px] bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full hover:bg-red-200 transition-colors font-bold text-sm flex items-center gap-2">
              <Lock size={14}/> Exit & Lock
-          </button>
+            </button>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-xl px-3 py-2 text-xs font-bold flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1"><Clock size={13} /> Pending</span>
+              <span>{pendingCount}</span>
+            </div>
+            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl px-3 py-2 text-xs font-bold flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1"><CheckCircle2 size={13} /> Accepted</span>
+              <span>{acceptedCount}</span>
+            </div>
+            <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-xl px-3 py-2 text-xs font-bold flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1"><Flame size={13} /> Preparing</span>
+              <span>{preparingCount}</span>
+            </div>
+            <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-xl px-3 py-2 text-xs font-bold flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1"><Utensils size={13} /> Ready</span>
+              <span>{readyCount}</span>
+            </div>
+          </div>
         </div>
 
         {orders.length === 0 ? (
@@ -1706,14 +1733,14 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-black/5 dark:border-white/5">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-black/5 dark:border-white/5">
                   <span className="font-black text-2xl text-[#2D241E] dark:text-white">{formatPrice(order.total)}</span>
                   {order.status === 'Pending' && (
-                    <div className="flex gap-2">
-                      <button onClick={() => onRejectOrder(order.id)} className={`px-6 py-3 min-h-[48px] rounded-xl font-bold text-sm transition-transform hover:scale-105 active:scale-95 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400`}>
+                    <div className="w-full sm:w-auto flex gap-2 sm:justify-end">
+                      <button onClick={() => onRejectOrder(order.id)} className={`flex-1 sm:flex-none px-6 py-3 min-h-[48px] rounded-xl font-bold text-sm transition-transform hover:scale-105 active:scale-95 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400`}>
                         Reject
                       </button>
-                      <button onClick={() => onAcceptOrder(order.id)} className={`px-8 py-3 min-h-[48px] rounded-xl font-bold text-base transition-transform hover:scale-105 active:scale-95 ${THEME.primary} shadow-lg shadow-[#6F4E37]/30`}>
+                      <button onClick={() => onAcceptOrder(order.id)} className={`flex-1 sm:flex-none px-8 py-3 min-h-[48px] rounded-xl font-bold text-base transition-transform hover:scale-105 active:scale-95 ${THEME.primary} shadow-lg shadow-[#6F4E37]/30`}>
                         Accept
                       </button>
                     </div>
