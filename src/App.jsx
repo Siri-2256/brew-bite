@@ -521,7 +521,7 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
     </div>
   );
 };
-const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode, tableNumber, onModeChangeClick, setIsMobileMenuOpen, isTableLocked, onAdminClick }) => {
+const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, adminBadgeCount, orderMode, tableNumber, onModeChangeClick, setIsMobileMenuOpen, isTableLocked, onAdminClick }) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -535,8 +535,8 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode
       <div className="w-full mx-auto flex items-center justify-between">
         
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-          <div className="p-1 rounded-xl transition-transform duration-300 group-hover:rotate-12">
-            <img src="/favicon.svg" alt="BrewBite" className="h-10 w-10 rounded-xl object-cover shadow-sm" />
+          <div className={`p-2 rounded-xl transition-transform duration-300 group-hover:rotate-12 ${THEME.primary}`}>
+            <Coffee size={24} strokeWidth={2.5} className="text-white" />
           </div>
           <span className="text-xl font-bold tracking-tight text-[#2D241E] dark:text-white hidden sm:block">Brew<span className="font-light">Bite</span></span>
         </div>
@@ -564,11 +564,12 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode
 
             <button onClick={onNotifClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
               <Bell size={20} className={unreadNotif > 0 ? 'animate-bounce text-[#6F4E37]' : ''} />
-              {unreadNotif > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{unreadNotif}</span>}
+              {unreadNotif > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-[#6F4E37] text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-[#FAF7F2] dark:border-[#1C1917] shadow-sm">{unreadNotif}</span>}
             </button>
 
-            <button onClick={onAdminClick} className="p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Admin Portal">
+            <button onClick={onAdminClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Admin Portal">
               <Lock size={20} />
+              {adminBadgeCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-[#6F4E37] text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-[#FAF7F2] dark:border-[#1C1917] shadow-sm">{adminBadgeCount}</span>}
             </button>
 
             <button className="p-2 text-[#2D241E] dark:text-white transition-transform hover:bg-black/5 dark:hover:bg-white/10 rounded-full flex items-center justify-center" onClick={() => setIsMobileMenuOpen(true)}>
@@ -729,7 +730,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto hide-scrollbar">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start">
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -2398,6 +2399,7 @@ const handlePlaceOrder = (discountAmount) => {
           setIsDarkMode={setIsDarkMode} 
           isCartAnimating={isCartAnimating} 
           unreadNotif={unreadNotif}
+          adminBadgeCount={adminActiveOrders.length}
           onNotifClick={() => { setUnreadNotif(0); if(activeOrderId) setIsStatusOpen(true); else showToast("No active orders to track."); }}
           orderMode={orderMode}
           tableNumber={tableNumber}
