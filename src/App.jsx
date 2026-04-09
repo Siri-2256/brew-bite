@@ -521,7 +521,7 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
     </div>
   );
 };
-const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode, tableNumber, onModeChangeClick, setIsMobileMenuOpen, isTableLocked }) => {
+const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode, tableNumber, onModeChangeClick, setIsMobileMenuOpen, isTableLocked, onAdminClick }) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -565,6 +565,10 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, orderMode
             <button onClick={onNotifClick} className="relative p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
               <Bell size={20} className={unreadNotif > 0 ? 'animate-bounce text-[#6F4E37]' : ''} />
               {unreadNotif > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{unreadNotif}</span>}
+            </button>
+
+            <button onClick={onAdminClick} className="p-2 rounded-full text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors" title="Admin Portal">
+              <Lock size={20} />
             </button>
 
             <button className="p-2 text-[#2D241E] dark:text-white transition-transform hover:bg-black/5 dark:hover:bg-white/10 rounded-full flex items-center justify-center" onClick={() => setIsMobileMenuOpen(true)}>
@@ -2045,6 +2049,8 @@ export default function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
 
   const resetAppData = () => {
     setIsResetConfirmOpen(false);
@@ -2303,6 +2309,22 @@ const handlePlaceOrder = (discountAmount) => {
      setIsCartOpen(true);
   }
 
+  const handleAdminLoginSuccess = () => {
+    setIsAdminLoginOpen(false);
+    setIsAdminPanelOpen(true);
+    showToast('Admin portal unlocked');
+  };
+
+  const handleAcceptOrder = (orderId) => {
+    setOrders(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Accepted' } : order));
+    setOrderHistory(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Accepted' } : order));
+  };
+
+  const handleRejectOrder = (orderId) => {
+    setOrders(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Rejected' } : order));
+    setOrderHistory(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Rejected' } : order));
+  };
+
   // Get ALL active orders for the current user's session
  // Get ALL active orders for the current user's session
   const myActiveOrders = orders.filter(o => 
@@ -2310,6 +2332,14 @@ const handlePlaceOrder = (discountAmount) => {
     o.table === tableNumber && 
     ['Pending', 'Accepted', 'Preparing', 'Ready', 'Served', 'Rejected'].includes(o.status)
   );
+
+  const adminActiveOrders = useMemo(
+    () => orders
+      .filter(o => ['Pending', 'Accepted', 'Preparing', 'Ready'].includes(o.status))
+      .sort((a, b) => b.timestamp - a.timestamp),
+    [orders],
+  );
+
   return (
     <>
       <div className={`w-full overflow-x-hidden min-h-screen transition-colors duration-300 ${THEME.bg} ${THEME.text}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -2338,6 +2368,7 @@ const handlePlaceOrder = (discountAmount) => {
           onModeChangeClick={() => setIsModeModalOpen(true)}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
           isTableLocked={isTableLocked}
+          onAdminClick={() => setIsAdminLoginOpen(true)}
         />
 
         <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMobileMenuOpen(false)} />
@@ -2354,6 +2385,7 @@ const handlePlaceOrder = (discountAmount) => {
 
              <button onClick={() => { setIsHistoryOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><History size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Order History</button>
              <button onClick={() => { setIsFavOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Heart size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Favorites</button>
+             <button onClick={() => { setIsAdminLoginOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Lock size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Admin Portal</button>
              <button onClick={() => { document.getElementById('recently-viewed')?.scrollIntoView({behavior:'smooth', block: 'start'}); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Clock size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Recently Viewed</button>
              <button onClick={() => { document.getElementById('order-again')?.scrollIntoView({behavior:'smooth', block: 'start'}); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Package size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Order Again</button>
              
@@ -2454,6 +2486,20 @@ const handlePlaceOrder = (discountAmount) => {
           isOpen={isResetConfirmOpen}
           onClose={() => setIsResetConfirmOpen(false)}
           onReset={resetAppData}
+        />
+
+        <AdminLoginModal
+          isOpen={isAdminLoginOpen}
+          onClose={() => setIsAdminLoginOpen(false)}
+          onLogin={handleAdminLoginSuccess}
+        />
+
+        <AdminPanel
+          orders={adminActiveOrders}
+          onAcceptOrder={handleAcceptOrder}
+          onRejectOrder={handleRejectOrder}
+          isOpen={isAdminPanelOpen}
+          onClose={() => setIsAdminPanelOpen(false)}
         />
 
         <Toast message={toastState.message} visible={toastState.visible} />
