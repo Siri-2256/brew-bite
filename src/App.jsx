@@ -535,8 +535,8 @@ const Navbar = ({ cartCount, setIsCartOpen, unreadNotif, onNotifClick, adminBadg
       <div className="w-full mx-auto flex items-center justify-between">
         
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-          <div className={`p-2 rounded-xl transition-transform duration-300 group-hover:rotate-12 ${THEME.primary}`}>
-            <Coffee size={24} strokeWidth={2.5} className="text-white" />
+          <div className="p-1 rounded-xl transition-transform duration-300 group-hover:rotate-12">
+            <img src="/favicon.svg" alt="BrewBite" className="h-10 w-10 rounded-xl object-cover shadow-sm" />
           </div>
           <span className="text-xl font-bold tracking-tight text-[#2D241E] dark:text-white hidden sm:block">Brew<span className="font-light">Bite</span></span>
         </div>
@@ -929,7 +929,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
   );
 };
 
-const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites, onQuickView, recentlyViewed, recentlyOrdered, dietFilter, setDietFilter }) => {
+const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites, onQuickView, onRemoveRecentlyViewed, recentlyViewed, recentlyOrdered, dietFilter, setDietFilter }) => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('default'); 
@@ -1176,12 +1176,35 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                     const item = MENU_ITEMS.find(i => i.id === id);
                     if(!item) return null;
                     return (
-                      <div key={`recent-${id}`} onClick={() => onQuickView(item)} className={`shrink-0 w-48 flex items-center gap-3 p-2 rounded-xl ${THEME.cardBg} border ${THEME.border} shadow-sm cursor-pointer hover:shadow-md transition-shadow min-h-[64px]`}>
-                        <img src={item.image} className="w-12 h-12 rounded-lg object-cover" fetchpriority="high" loading="lazy" />
-                        <div>
-                          <p className="text-sm font-bold truncate w-28 text-[#2D241E] dark:text-white">{item.name}</p>
-                          <p className={`text-xs ${THEME.muted}`}>{formatPrice(item.price)}</p>
+                      <div key={`recent-${id}`} className={`relative shrink-0 w-56 flex flex-col gap-3 p-3 rounded-xl ${THEME.cardBg} border ${THEME.border} shadow-sm hover:shadow-md transition-shadow min-h-[150px]`}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRemoveRecentlyViewed(id);
+                          }}
+                          className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 dark:bg-black/40 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center"
+                          title="Remove from recently viewed"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+
+                        <div onClick={() => onQuickView(item)} className="flex items-center gap-3 cursor-pointer pr-8">
+                          <img src={item.image} className="w-14 h-14 rounded-lg object-cover" fetchpriority="high" loading="lazy" />
+                          <div>
+                            <p className="text-sm font-bold truncate w-28 text-[#2D241E] dark:text-white">{item.name}</p>
+                            <p className={`text-xs ${THEME.muted}`}>{formatPrice(item.price)}</p>
+                          </div>
                         </div>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                          }}
+                          className="mt-auto w-full py-2.5 min-h-[44px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37] hover:text-white transition-colors"
+                        >
+                          Add to Cart
+                        </button>
                       </div>
                     )
                   })}
@@ -1551,7 +1574,7 @@ const OrderHistoryModal = ({ isOpen, onClose, history, onReorder }) => {
   );
 };
 
-const FavoritesPage = ({ favorites, isFavOpen, onClose, addToCart, toggleFavorite }) => {
+const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToCart, updateQuantity, toggleFavorite }) => {
   if (!isFavOpen) return null;
   const favoriteItems = MENU_ITEMS.filter(item => favorites.includes(item.id));
 
@@ -1560,9 +1583,17 @@ const FavoritesPage = ({ favorites, isFavOpen, onClose, addToCart, toggleFavorit
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
         <div className="flex justify-between items-center mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-10 py-4">
           <h2 className="text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Heart size={32} className="text-red-500 fill-red-500"/> Your Favorites</h2>
-          <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center">
-             <X size={24} className="text-[#2D241E] dark:text-white" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onViewCart}
+              className="px-4 py-2 min-h-[44px] rounded-full bg-[#6F4E37] text-white font-bold text-sm hover:bg-[#5A3E2B] transition-colors"
+            >
+              View Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})
+            </button>
+            <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center">
+               <X size={24} className="text-[#2D241E] dark:text-white" />
+            </button>
+          </div>
         </div>
 
         {favoriteItems.length === 0 ? (
@@ -1589,12 +1620,37 @@ const FavoritesPage = ({ favorites, isFavOpen, onClose, addToCart, toggleFavorit
                     </div>
                   </div>
                 </div>
-                <button 
-                  onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')} 
-                  className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] hover:bg-[#6F4E37] dark:hover:bg-[#D4B895] hover:text-white dark:hover:text-[#12100E] transition-colors flex items-center justify-center gap-2"
-                >
-                  <Plus size={16}/> Add to Cart
-                </button>
+                {(() => {
+                  const matchingCartItems = cart.filter(cartItem => cartItem.id === item.id);
+                  const cartQty = matchingCartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
+                  return cartQty > 0 ? (
+                    <div className="w-full mt-auto flex items-center justify-between bg-[#6F4E37] text-white rounded-xl px-2 py-1.5 shadow-md min-h-[48px]">
+                      <button
+                        onClick={() => {
+                          const target = matchingCartItems[0];
+                          if (target) updateQuantity(target.uniqueId, -1);
+                        }}
+                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                      >
+                        <Minus size={16} strokeWidth={2.5}/>
+                      </button>
+                      <span className="text-base font-bold w-6 text-center">{cartQty}</span>
+                      <button
+                        onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                      >
+                        <Plus size={16} strokeWidth={2.5}/>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                      className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] hover:bg-[#6F4E37] dark:hover:bg-[#D4B895] hover:text-white dark:hover:text-[#12100E] transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Plus size={16}/> Add to Cart
+                    </button>
+                  );
+                })()}
               </div>
             ))}
           </div>
@@ -2443,9 +2499,9 @@ const handlePlaceOrder = (discountAmount) => {
 
              <button onClick={() => { setIsHistoryOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><History size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Order History</button>
              <button onClick={() => { setIsFavOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Heart size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Favorites</button>
-             <button onClick={() => { setIsAdminLoginOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Lock size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Admin Portal</button>
              <button onClick={() => { document.getElementById('recently-viewed')?.scrollIntoView({behavior:'smooth', block: 'start'}); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Clock size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Recently Viewed</button>
              <button onClick={() => { document.getElementById('order-again')?.scrollIntoView({behavior:'smooth', block: 'start'}); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Package size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Order Again</button>
+             <button onClick={() => { setIsAdminLoginOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold text-lg text-[#2D241E] dark:text-white min-h-[48px]"><Lock size={24} className="text-[#6F4E37] dark:text-[#D4B895]"/> Admin Portal</button>
              
              <div className="mt-auto border-t border-black/10 dark:border-white/10 pt-4 flex flex-col gap-4">
                <button onClick={() => { setIsResetConfirmOpen(true); setIsMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-300 text-red-900 dark:bg-red-700 dark:text-red-100 hover:bg-red-400 dark:hover:bg-red-600 transition-colors font-bold text-lg min-h-[48px]">
@@ -2467,6 +2523,7 @@ const handlePlaceOrder = (discountAmount) => {
           toggleFavorite={toggleFavorite}
           favorites={favorites}
           onQuickView={handleQuickView}
+          onRemoveRecentlyViewed={(id) => setRecentlyViewed(prev => prev.filter(viewedId => viewedId !== id))}
           recentlyViewed={recentlyViewed}
           recentlyOrdered={recentlyOrdered}
           dietFilter={dietFilter}
@@ -2529,9 +2586,12 @@ const handlePlaceOrder = (discountAmount) => {
 
         <FavoritesPage
           favorites={favorites}
+          cart={cart}
           isFavOpen={isFavOpen}
           onClose={() => setIsFavOpen(false)}
+          onViewCart={() => { setIsFavOpen(false); setIsCartOpen(true); }}
           addToCart={addToCart}
+          updateQuantity={updateQuantity}
           toggleFavorite={toggleFavorite}
         />
 
