@@ -712,7 +712,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative w-full max-w-5xl max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down hide-scrollbar`}>
+      <div className={`relative w-full max-w-5xl max-h-[95vh] ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down`}>
         
         <button onClick={onClose} className="absolute top-4 right-4 z-20 p-2 bg-white/50 dark:bg-black/50 backdrop-blur-md rounded-full hover:bg-white dark:hover:bg-black transition-colors text-[#2D241E] dark:text-white shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
           <X size={20} />
@@ -721,8 +721,8 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           <Heart size={20} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
         </button>
 
-        <div className="w-full md:w-1/2 aspect-square md:aspect-auto md:min-h-full relative bg-black/5 dark:bg-white/5">
-          <img src={item.image} alt={item.name} className="w-full h-full object-cover" fetchpriority="high" loading="eager" />
+        <div className="w-full md:w-1/2 md:max-h-[95vh] md:overflow-hidden relative bg-black/5 dark:bg-white/5">
+          <img src={item.image} alt={item.name} className="w-full h-auto md:h-full md:sticky md:top-0 object-cover" fetchpriority="high" loading="eager" />
           {item.isPopular && (
             <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 flex items-center gap-1">
               <Flame size={14} /> Popular
@@ -730,7 +730,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto md:max-h-[95vh] hide-scrollbar">
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -1268,7 +1268,10 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
 
           <div className="p-6 md:p-8 pt-0 space-y-6">
              <div className="bg-black/5 dark:bg-white/5 p-5 rounded-2xl">
-               <h3 className="font-bold text-[#2D241E] dark:text-white mb-4 border-b border-black/10 dark:border-white/10 pb-2 text-lg">Order Details</h3>
+               <div className="flex justify-between items-start mb-4 border-b border-black/10 dark:border-white/10 pb-2">
+                 <h3 className="font-bold text-[#2D241E] dark:text-white text-lg">Order Details</h3>
+                 <button onClick={onBackToCart} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-black/20 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center" title="Back to cart"><X size={16} className="text-[#2D241E] dark:text-white"/></button>
+               </div>
                <div className="flex items-center gap-2 mb-4 bg-white dark:bg-[#1C1917] p-3 rounded-xl shadow-sm w-max">
                   {orderMode === 'Dine-In' ? <MapPin size={18} className="text-[#6F4E37]"/> : <Package size={18} className="text-[#6F4E37]"/>}
                   <span className="font-bold text-sm text-[#2D241E] dark:text-white">
@@ -1902,14 +1905,16 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
             ))
           )}
 
-          <div className="pt-6 border-t border-black/10 dark:border-white/10">
-            <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-[#2D241E] dark:text-white"><Tag size={16}/> Apply Coupon</h4>
-            <div className="flex gap-2">
-              <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 px-4 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
-              <button onClick={handleApplyCoupon} className={`px-4 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
+          {cart.length > 0 && (
+            <div className="pt-6 border-t border-black/10 dark:border-white/10">
+              <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-[#2D241E] dark:text-white"><Tag size={16}/> Apply Coupon</h4>
+              <div className="flex gap-2">
+                <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 px-4 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
+                <button onClick={handleApplyCoupon} className={`px-4 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
+              </div>
+              {appliedDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
             </div>
-            {appliedDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
-          </div>
+          )}
         </div>
 
         {cart.length > 0 && (
@@ -1930,6 +1935,10 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
               </p>
             </div>
             {/* END PROGRESS BAR */}
+            
+            <button onClick={() => { setIsCartOpen(false); document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="w-full py-3 min-h-[48px] rounded-xl font-bold text-sm bg-[#6F4E37]/10 text-[#6F4E37] dark:bg-[#D4B895]/10 dark:text-[#D4B895] hover:bg-[#6F4E37]/20 dark:hover:bg-[#D4B895]/20 transition-colors mb-6">
+              + Add More Items
+            </button>
 
 
 
@@ -2058,12 +2067,23 @@ export default function App() {
     if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_history')) || [];
     return [];
   });
+  
+  useEffect(() => {
+    localStorage.setItem('brewbite_history', JSON.stringify(orderHistory));
+  }, [orderHistory]);
 
   const [cart, setCart] = useState(() => {
     if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_cart')) || [];
     return [];
   });
-  const [orders, setOrders] = useState([]); 
+  const [orders, setOrders] = useState(() => {
+    if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_orders')) || [];
+    return [];
+  }); 
+  
+  useEffect(() => {
+    localStorage.setItem('brewbite_orders', JSON.stringify(orders));
+  }, [orders]);
   
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(() => {
@@ -2399,7 +2419,7 @@ const handlePlaceOrder = (discountAmount) => {
           setIsDarkMode={setIsDarkMode} 
           isCartAnimating={isCartAnimating} 
           unreadNotif={unreadNotif}
-          adminBadgeCount={adminActiveOrders.length}
+          adminBadgeCount={adminActiveOrders.filter(o => o.status === 'Pending').length}
           onNotifClick={() => { setUnreadNotif(0); if(activeOrderId) setIsStatusOpen(true); else showToast("No active orders to track."); }}
           orderMode={orderMode}
           tableNumber={tableNumber}
