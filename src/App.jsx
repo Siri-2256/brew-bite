@@ -1301,7 +1301,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
 // 5. CHECKOUT, ORDER TRACKING, HISTORY, & ADMIN
 // ==========================================
 
-const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, availableCoupons, onRedeemCoupon, orderMode, tableNumber, onConfirm }) => {
+const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, availableCoupons, onRedeemCoupon, orderMode, tableNumber, onConfirm, addToCart }) => {
   const [couponCode, setCouponCode] = useState('');
   const [localDiscount, setLocalDiscount] = useState(0);
   const [showCoupons, setShowCoupons] = useState(false);
@@ -1360,8 +1360,8 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
              <button onClick={onBackToCart} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Back to cart"><X size={20} className="text-[#2D241E] dark:text-white"/></button>
           </div>
 
-          <div className="p-6 md:p-8 pt-0 space-y-6">
-             <div className="bg-black/5 dark:bg-white/5 p-5 rounded-2xl">
+           <div className="p-6 md:p-8 pt-0 flex-1 overflow-hidden flex flex-col gap-6">
+             <div className="bg-black/5 dark:bg-white/5 p-5 rounded-2xl flex flex-col min-h-0">
                <div className="flex justify-between items-start mb-4 border-b border-black/10 dark:border-white/10 pb-2">
                  <h3 className="font-bold text-[#2D241E] dark:text-white text-lg">Order Details</h3>
                  <button onClick={onBackToCart} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-black/20 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center" title="Back to cart"><X size={16} className="text-[#2D241E] dark:text-white"/></button>
@@ -1373,7 +1373,7 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                   </span>
                </div>
                
-               <div className="space-y-3 max-h-[30vh] overflow-y-auto hide-scrollbar">
+               <div className="space-y-3 flex-1 min-h-[180px] max-h-[38vh] overflow-y-auto hide-scrollbar">
                  {cart.map(item => (
                     <div key={item.uniqueId} className="flex justify-between items-start text-sm">
                        <div>
@@ -1431,10 +1431,16 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                     {checkoutRecommendations.map((item) => (
                       <div key={`checkout-reco-${item.id}`} className="flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5">
                         <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover" loading="lazy" />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="text-xs font-bold truncate text-[#2D241E] dark:text-white">{item.name}</p>
                           <p className="text-[11px] text-[#8A7B72] dark:text-[#A89F95]">{formatPrice(item.price)}</p>
                         </div>
+                        <button
+                          onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                          className="px-2 py-1 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10"
+                        >
+                          Add
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -2116,17 +2122,22 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                   <h4 className="text-sm font-bold mb-3 text-[#2D241E] dark:text-white">Recommended For You</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {recommendations.map((item) => (
-                      <button
+                      <div
                         key={`cart-reco-${item.id}`}
-                        onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
-                        className="text-left flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                        className="text-left flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5"
                       >
                         <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover" loading="lazy" />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="text-xs font-bold truncate text-[#2D241E] dark:text-white">{item.name}</p>
                           <p className="text-[11px] text-[#8A7B72] dark:text-[#A89F95]">{formatPrice(item.price)}</p>
                         </div>
-                      </button>
+                        <button
+                          onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                          className="px-2 py-1 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10"
+                        >
+                          Add
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -2769,6 +2780,7 @@ const handlePlaceOrder = (discountAmount) => {
           onRedeemCoupon={handleRedeemCoupon}
           orderMode={orderMode}
           tableNumber={tableNumber}
+          addToCart={addToCart}
           // 👇 Change this line exactly like this:
           onConfirm={(finalDiscount) => handlePlaceOrder(finalDiscount)} 
         />
