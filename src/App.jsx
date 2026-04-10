@@ -1586,6 +1586,7 @@ const OrderStatusScreen = ({ activeOrders, onClose, orderReviews = {}, onSubmitR
   const [now, setNow] = useState(Date.now());
   const [reviewEditorOrderId, setReviewEditorOrderId] = useState(null);
   const [reviewDrafts, setReviewDrafts] = useState({});
+  const [showReviewThanks, setShowReviewThanks] = useState(false);
 
   // Force a re-render every 10 seconds to update all order timers simultaneously
   useEffect(() => {
@@ -1779,6 +1780,7 @@ const OrderStatusScreen = ({ activeOrders, onClose, orderReviews = {}, onSubmitR
                                         });
                                         onSubmitReview(order.id, items);
                                         setReviewEditorOrderId(null);
+                                        setShowReviewThanks(true);
                                       }}
                                       className="px-3 py-2 text-xs font-bold rounded-lg bg-green-600 text-white hover:bg-green-700 flex items-center gap-1"
                                     >
@@ -1803,6 +1805,24 @@ const OrderStatusScreen = ({ activeOrders, onClose, orderReviews = {}, onSubmitR
             Continue Ordering
           </button>
         </div>
+
+        {showReviewThanks && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#FAF7F2]/90 dark:bg-[#12100E]/90 backdrop-blur-sm px-4">
+            <div className={`w-full max-w-sm ${THEME.cardBg} border ${THEME.border} rounded-2xl p-6 text-center shadow-2xl`}>
+              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 size={24} />
+              </div>
+              <h3 className="text-lg font-black text-[#2D241E] dark:text-white">Thank you for your review!</h3>
+              <p className="text-sm text-[#8A7B72] mt-1 mb-5">Your feedback has been saved successfully.</p>
+              <button
+                onClick={() => setShowReviewThanks(false)}
+                className={`w-full py-3 min-h-[48px] rounded-xl font-bold text-base ${THEME.primary}`}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -2024,8 +2044,8 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-fade-in bg-[#FAF7F2] dark:bg-[#12100E]">
-      <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
-        <div className="mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 -mx-6 md:-mx-10 px-6 md:px-10 bg-white/95 dark:bg-[#1C1917]/95 z-40 py-4 backdrop-blur-md">
+      <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col`}>
+        <div className="mb-6 border-b border-black/10 dark:border-white/10 pb-4 bg-white dark:bg-[#1C1917] z-40 shrink-0">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#2D241E] dark:text-white flex items-center gap-3 leading-tight"><Utensils size={30} className="text-[#6F4E37]"/> Kitchen Dashboard</h2>
             <button onClick={onClose} className="w-full sm:w-auto justify-center px-5 py-2 min-h-[48px] bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full hover:bg-red-200 transition-colors font-bold text-sm flex items-center gap-2">
@@ -2059,7 +2079,8 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
              <p className={`text-xl font-bold text-[#2D241E] dark:text-white`}>No Active Orders</p>
            </div>
         ) : (
-          <div className="space-y-6">
+          <div className="flex-1 overflow-y-auto hide-scrollbar pr-1">
+            <div className="space-y-6">
             {orders.map(order => (
               <div key={order.id} className={`overflow-hidden p-5 sm:p-6 rounded-2xl border-2 ${order.status === 'Pending' ? 'border-[#6F4E37]' : THEME.border} ${THEME.cardBg} shadow-sm`}>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
@@ -2118,6 +2139,7 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
                 </div>
               </div>
             ))}
+            </div>
           </div>
         )}
       </div>
