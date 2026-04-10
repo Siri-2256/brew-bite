@@ -1488,15 +1488,14 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                 </button>
                 {showCoupons && (
                   <div className="mt-2 max-h-28 overflow-y-auto hide-scrollbar space-y-1">
-                    {availableCoupons.length === 0 && <p className="text-xs text-[#8A7B72]">No coupons earned yet.</p>}
-                    {availableCoupons.map((coupon) => (
+                    {availableCoupons.filter((coupon) => !coupon.used).length === 0 && <p className="text-xs text-[#8A7B72]">No available coupons.</p>}
+                    {availableCoupons.filter((coupon) => !coupon.used).map((coupon) => (
                       <button
                         key={coupon.code}
-                        disabled={coupon.used}
                         onClick={() => setCouponCode(coupon.code)}
-                        className={`w-full text-left px-2 py-1 rounded-md text-xs border ${coupon.used ? 'opacity-50 cursor-not-allowed border-black/10 dark:border-white/10' : 'border-[#6F4E37]/30 hover:bg-[#6F4E37]/10'}`}
+                        className="w-full text-left px-2 py-1 rounded-md text-xs border border-[#6F4E37]/30 hover:bg-[#6F4E37]/10"
                       >
-                        <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)} {coupon.used ? '(Used)' : ''}
+                        <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)}
                       </button>
                     ))}
                   </div>
@@ -1583,8 +1582,10 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
     </div>
   );
 }
-const OrderStatusScreen = ({ activeOrders, onClose }) => {
+const OrderStatusScreen = ({ activeOrders, onClose, orderReviews = {}, onSubmitReview }) => {
   const [now, setNow] = useState(Date.now());
+  const [reviewEditorOrderId, setReviewEditorOrderId] = useState(null);
+  const [reviewDrafts, setReviewDrafts] = useState({});
 
   // Force a re-render every 10 seconds to update all order timers simultaneously
   useEffect(() => {
@@ -1631,6 +1632,11 @@ const OrderStatusScreen = ({ activeOrders, onClose }) => {
 
             const elapsed = (now - order.timestamp) / 60000;
             const timeLeft = Math.max(0, Math.ceil(order.estimatedDelivery - elapsed));
+
+            const review = orderReviews[order.id];
+            const draftForOrder = reviewDrafts[order.id] || {};
+            const itemKeys = order.items.map((item, idx) => item.uniqueId || `${order.id}-${idx}`);
+            const allRated = itemKeys.every((key) => (draftForOrder[key] || 0) > 0);
 
             return (
               <div key={order.id} className="bg-black/[0.03] dark:bg-white/[0.03] rounded-2xl p-5 border border-black/5 dark:border-white/5 relative overflow-hidden">
@@ -1695,6 +1701,100 @@ const OrderStatusScreen = ({ activeOrders, onClose }) => {
                         <span className="text-xs font-bold text-[#8A7B72]">Total</span>
                         <span className="text-sm font-black text-[#6F4E37] dark:text-[#D4B895]">{formatPrice(order.total)}</span>
                       </div>
+
+                      {order.status === 'Served' && (
+                        <div className="mt-4 pt-3 border-t border-black/5 dark:border-white/5">
+                          {review ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1"><CheckCircle2 size={12}/> Review Submitted</span>
+                              </div>
+                              {review.items.map((entry) => (
+                                <div key={`${order.id}-${entry.key}`} className="flex items-center justify-between text-xs">
+                                  <span className="font-semibold text-[#2D241E] dark:text-white truncate pr-2">{entry.name}</span>
+                                  <div className="flex items-center gap-0.5">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <Star
+                                        key={star}
+                                        size={13}
+                                        className={star <= entry.stars ? 'text-yellow-500' : 'text-gray-300'}
+                                        fill={star <= entry.stars ? 'currentColor' : 'none'}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <>
+                              {reviewEditorOrderId !== order.id ? (
+                                <div className="flex justify-end">
+                                  <button
+                                    onClick={() => setReviewEditorOrderId(order.id)}
+                                    className="px-3 py-2 text-xs font-bold rounded-lg border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10"
+                                  >
+                                    Review Items
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="space-y-3">
+                                  {order.items.map((item, idx) => {
+                                    const key = item.uniqueId || `${order.id}-${idx}`;
+                                    const stars = draftForOrder[key] || 0;
+                                    return (
+                                      <div key={key} className="flex items-center justify-between gap-2">
+                                        <span className="text-xs font-semibold text-[#2D241E] dark:text-white truncate pr-2">{item.name}</span>
+                                        <div className="flex items-center gap-1">
+                                          {[1, 2, 3, 4, 5].map((star) => (
+                                            <button
+                                              key={star}
+                                              onClick={() => {
+                                                setReviewDrafts((prev) => ({
+                                                  ...prev,
+                                                  [order.id]: {
+                                                    ...(prev[order.id] || {}),
+                                                    [key]: star,
+                                                  },
+                                                }));
+                                              }}
+                                              className="p-0.5"
+                                            >
+                                              <Star
+                                                size={14}
+                                                className={star <= stars ? 'text-yellow-500' : 'text-gray-300'}
+                                                fill={star <= stars ? 'currentColor' : 'none'}
+                                              />
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                  <div className="flex justify-end">
+                                    <button
+                                      onClick={() => {
+                                        if (!allRated) {
+                                          alert('Please rate all items before submitting.');
+                                          return;
+                                        }
+                                        const items = order.items.map((item, idx) => {
+                                          const key = item.uniqueId || `${order.id}-${idx}`;
+                                          return { key, name: item.name, stars: draftForOrder[key] || 0 };
+                                        });
+                                        onSubmitReview(order.id, items);
+                                        setReviewEditorOrderId(null);
+                                      }}
+                                      className="px-3 py-2 text-xs font-bold rounded-lg bg-green-600 text-white hover:bg-green-700 flex items-center gap-1"
+                                    >
+                                      <CheckCircle2 size={12}/> Submit
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
                    </>
                 )}
               </div>
@@ -2197,15 +2297,14 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                 </button>
                 {showCoupons && (
                   <div className="mt-2 max-h-28 overflow-y-auto hide-scrollbar space-y-1">
-                    {availableCoupons.length === 0 && <p className="text-xs text-[#8A7B72]">No coupons earned yet.</p>}
-                    {availableCoupons.map((coupon) => (
+                    {availableCoupons.filter((coupon) => !coupon.used).length === 0 && <p className="text-xs text-[#8A7B72]">No available coupons.</p>}
+                    {availableCoupons.filter((coupon) => !coupon.used).map((coupon) => (
                       <button
                         key={coupon.code}
-                        disabled={coupon.used}
                         onClick={() => setCouponCode(coupon.code)}
-                        className={`w-full text-left px-2 py-1 rounded-md text-xs border ${coupon.used ? 'opacity-50 cursor-not-allowed border-black/10 dark:border-white/10' : 'border-[#6F4E37]/30 hover:bg-[#6F4E37]/10'}`}
+                        className="w-full text-left px-2 py-1 rounded-md text-xs border border-[#6F4E37]/30 hover:bg-[#6F4E37]/10"
                       >
-                        <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)} {coupon.used ? '(Used)' : ''}
+                        <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)}
                       </button>
                     ))}
                   </div>
@@ -2450,6 +2549,8 @@ export default function App() {
       localStorage.removeItem('brewbite_mode');
       localStorage.removeItem('brewbite_table');
       localStorage.removeItem('brewbite_mode_set');
+      localStorage.removeItem('brewbite_unread_notif');
+      localStorage.removeItem('brewbite_reviews');
     }
   };
 
@@ -2458,7 +2559,14 @@ export default function App() {
   
   const [activeOrderId, setActiveOrderId] = useState(null);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
-  const [unreadNotif, setUnreadNotif] = useState(0);
+  const [unreadNotif, setUnreadNotif] = useState(() => {
+    if (typeof window !== 'undefined') return Number(localStorage.getItem('brewbite_unread_notif') || 0);
+    return 0;
+  });
+  const [orderReviews, setOrderReviews] = useState(() => {
+    if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_reviews') || '{}');
+    return {};
+  });
   const [toastState, setToastState] = useState({ visible: false, message: '' });
 
   // REWARD STATES
@@ -2495,6 +2603,8 @@ export default function App() {
   useEffect(() => { localStorage.setItem('brewbite_history', JSON.stringify(orderHistory)); }, [orderHistory]);
   useEffect(() => { localStorage.setItem('brewbite_cart', JSON.stringify(cart)); }, [cart]);
   useEffect(() => { localStorage.setItem('brewbite_cart_open', JSON.stringify(isCartOpen)); }, [isCartOpen]);
+  useEffect(() => { localStorage.setItem('brewbite_unread_notif', String(unreadNotif)); }, [unreadNotif]);
+  useEffect(() => { localStorage.setItem('brewbite_reviews', JSON.stringify(orderReviews)); }, [orderReviews]);
   useEffect(() => { 
     if(!isTableLocked) {
       localStorage.setItem('brewbite_mode', orderMode); 
@@ -2720,6 +2830,16 @@ const handlePlaceOrder = (discountAmount) => {
     setEarnedCoupons((prev) => [...prev, claimedCoupon]);
   };
 
+  const handleSubmitOrderReview = (orderId, items) => {
+    setOrderReviews((prev) => ({
+      ...prev,
+      [orderId]: {
+        submittedAt: Date.now(),
+        items,
+      },
+    }));
+  };
+
   const handleAcceptOrder = (orderId) => {
     setOrders(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Accepted' } : order));
     setOrderHistory(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Accepted' } : order));
@@ -2914,7 +3034,14 @@ const handlePlaceOrder = (discountAmount) => {
           onReorder={handleReorder}
         />
 
-       {isStatusOpen && (<OrderStatusScreen activeOrders={myActiveOrders} onClose={() => setIsStatusOpen(false)} />)}
+       {isStatusOpen && (
+         <OrderStatusScreen
+           activeOrders={myActiveOrders}
+           onClose={() => setIsStatusOpen(false)}
+           orderReviews={orderReviews}
+           onSubmitReview={handleSubmitOrderReview}
+         />
+       )}
 
         <ResetConfirmModal
           isOpen={isResetConfirmOpen}
