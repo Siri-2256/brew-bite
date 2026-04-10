@@ -1301,10 +1301,11 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
 // 5. CHECKOUT, ORDER TRACKING, HISTORY, & ADMIN
 // ==========================================
 
-const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, availableCoupons, onRedeemCoupon, orderMode, tableNumber, onConfirm, addToCart }) => {
+const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, availableCoupons, onRedeemCoupon, orderMode, tableNumber, onConfirm, addToCart, onQuickView }) => {
   const [couponCode, setCouponCode] = useState('');
   const [localDiscount, setLocalDiscount] = useState(0);
   const [showCoupons, setShowCoupons] = useState(false);
+  const contentRef = useRef(null);
 
   // Sync initial discount if they already applied one in the Cart Drawer
   useEffect(() => {
@@ -1312,6 +1313,9 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
       setLocalDiscount(appliedDiscount || 0);
       setCouponCode('');
       setShowCoupons(false);
+      requestAnimationFrame(() => {
+        if (contentRef.current) contentRef.current.scrollTop = 0;
+      });
     }
   }, [isOpen, appliedDiscount]);
 
@@ -1355,13 +1359,13 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#FAF7F2]/90 dark:bg-[#12100E]/90 backdrop-blur-md animate-fade-in overflow-y-auto hide-scrollbar">
-       <div className={`w-full max-w-2xl ${THEME.cardBg} rounded-3xl shadow-2xl border ${THEME.border} overflow-hidden flex flex-col`}>
+      <div className={`w-full max-w-2xl h-full max-h-[95vh] ${THEME.cardBg} rounded-3xl shadow-2xl border ${THEME.border} overflow-hidden flex flex-col`}>
           <div className="p-4 flex justify-end items-center sticky top-0 z-10 bg-transparent">
              <button onClick={onBackToCart} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Back to cart"><X size={20} className="text-[#2D241E] dark:text-white"/></button>
           </div>
 
-           <div className="p-6 md:p-8 pt-0 flex-1 overflow-hidden flex flex-col gap-6">
-             <div className="bg-black/5 dark:bg-white/5 p-5 rounded-2xl flex flex-col min-h-0">
+           <div ref={contentRef} className="p-6 md:p-8 pt-0 space-y-6 flex-1 overflow-y-auto hide-scrollbar">
+             <div className="bg-black/5 dark:bg-white/5 p-5 rounded-2xl">
                <div className="flex justify-between items-start mb-4 border-b border-black/10 dark:border-white/10 pb-2">
                  <h3 className="font-bold text-[#2D241E] dark:text-white text-lg">Order Details</h3>
                  <button onClick={onBackToCart} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-black/20 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center" title="Back to cart"><X size={16} className="text-[#2D241E] dark:text-white"/></button>
@@ -1373,7 +1377,7 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                   </span>
                </div>
                
-               <div className="space-y-3 flex-1 min-h-[180px] max-h-[38vh] overflow-y-auto hide-scrollbar">
+               <div className="space-y-3">
                  {cart.map(item => (
                     <div key={item.uniqueId} className="flex justify-between items-start text-sm">
                        <div>
@@ -1429,14 +1433,17 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                   <h4 className="text-sm font-bold mb-3 text-[#2D241E] dark:text-white">Recommended For You</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {checkoutRecommendations.map((item) => (
-                      <div key={`checkout-reco-${item.id}`} className="flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5">
+                      <div key={`checkout-reco-${item.id}`} onClick={() => onQuickView(item)} className="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                         <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover" loading="lazy" />
                         <div className="min-w-0 flex-1">
                           <p className="text-xs font-bold truncate text-[#2D241E] dark:text-white">{item.name}</p>
                           <p className="text-[11px] text-[#8A7B72] dark:text-[#A89F95]">{formatPrice(item.price)}</p>
                         </div>
                         <button
-                          onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                          }}
                           className="px-2 py-1 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10"
                         >
                           Add
@@ -1484,7 +1491,7 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                 </p>
               </div>
 
-              <button onClick={() => { onClose(); document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="w-full py-3 mt-4 rounded-xl font-bold text-[#6F4E37] dark:text-[#D4B895] bg-[#6F4E37]/10 dark:bg-[#D4B895]/10 hover:bg-[#6F4E37]/20 transition-colors min-h-[48px]">
+              <button onClick={onClose} className="w-full py-3 mt-4 rounded-xl font-bold text-[#6F4E37] dark:text-[#D4B895] bg-[#6F4E37]/10 dark:bg-[#D4B895]/10 hover:bg-[#6F4E37]/20 transition-colors min-h-[48px]">
                 Add More Items
               </button>
             </div>
@@ -1717,7 +1724,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
           <div className="flex flex-col items-center justify-center py-20 opacity-50">
              <Heart size={64} className="mb-4 text-[#2D241E] dark:text-white" />
              <p className={`text-xl font-bold text-[#2D241E] dark:text-white`}>No favorites yet.</p>
-             <button onClick={() => { onClose(); document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="text-[#6F4E37] dark:text-[#D4B895] font-semibold hover:underline mt-2 min-h-[48px] px-4 py-2">
+             <button onClick={onClose} className="text-[#6F4E37] dark:text-[#D4B895] font-semibold hover:underline mt-2 min-h-[48px] px-4 py-2">
                Browse Menu
              </button>
           </div>
@@ -1967,7 +1974,7 @@ const FloatingCartBar = ({ cartCount, cartTotal, onOpenCart }) => {
 
 // 🔥 2. PROGRESS BAR (CART DRAWER UPDATE)
 // 🔥 2. PROGRESS BAR (CART DRAWER UPDATE)
-const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal, onProceedToCheckout, addToCart, availableCoupons, onRedeemCoupon }) => {
+const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal, onProceedToCheckout, addToCart, availableCoupons, onRedeemCoupon, onQuickView }) => {
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [showCoupons, setShowCoupons] = useState(false);
@@ -2048,7 +2055,7 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-60">
               <ShoppingBag size={64} strokeWidth={1} className="text-[#2D241E] dark:text-white" />
               <p className="text-lg font-medium text-[#2D241E] dark:text-white">Your cart is empty.</p>
-              <button onClick={() => { setIsCartOpen(false); document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="text-[#6F4E37] dark:text-[#D4B895] font-semibold hover:underline mt-2 min-h-[48px] px-4 py-2">
+              <button onClick={() => setIsCartOpen(false)} className="text-[#6F4E37] dark:text-[#D4B895] font-semibold hover:underline mt-2 min-h-[48px] px-4 py-2">
                 Browse Menu
               </button>
             </div>
@@ -2124,7 +2131,8 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                     {recommendations.map((item) => (
                       <div
                         key={`cart-reco-${item.id}`}
-                        className="text-left flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5"
+                        onClick={() => onQuickView(item)}
+                        className="cursor-pointer text-left flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                       >
                         <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover" loading="lazy" />
                         <div className="min-w-0 flex-1">
@@ -2132,7 +2140,10 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                           <p className="text-[11px] text-[#8A7B72] dark:text-[#A89F95]">{formatPrice(item.price)}</p>
                         </div>
                         <button
-                          onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                          }}
                           className="px-2 py-1 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10"
                         >
                           Add
@@ -2165,7 +2176,7 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
             </div>
             {/* END PROGRESS BAR */}
             
-            <button onClick={() => { setIsCartOpen(false); document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="w-full py-3 min-h-[48px] rounded-xl font-bold text-sm bg-[#6F4E37]/10 text-[#6F4E37] dark:bg-[#D4B895]/10 dark:text-[#D4B895] hover:bg-[#6F4E37]/20 dark:hover:bg-[#D4B895]/20 transition-colors mb-6">
+            <button onClick={() => setIsCartOpen(false)} className="w-full py-3 min-h-[48px] rounded-xl font-bold text-sm bg-[#6F4E37]/10 text-[#6F4E37] dark:bg-[#D4B895]/10 dark:text-[#D4B895] hover:bg-[#6F4E37]/20 dark:hover:bg-[#D4B895]/20 transition-colors mb-6">
               + Add More Items
             </button>
 
@@ -2764,6 +2775,10 @@ const handlePlaceOrder = (discountAmount) => {
           addToCart={addToCart}
           availableCoupons={earnedCoupons}
           onRedeemCoupon={handleRedeemCoupon}
+          onQuickView={(item) => {
+            setIsCartOpen(false);
+            handleQuickView(item);
+          }}
         />
 <CheckoutModal
           isOpen={isCheckoutOpen}
@@ -2781,6 +2796,10 @@ const handlePlaceOrder = (discountAmount) => {
           orderMode={orderMode}
           tableNumber={tableNumber}
           addToCart={addToCart}
+          onQuickView={(item) => {
+            setIsCheckoutOpen(false);
+            handleQuickView(item);
+          }}
           // 👇 Change this line exactly like this:
           onConfirm={(finalDiscount) => handlePlaceOrder(finalDiscount)} 
         />
