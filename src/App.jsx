@@ -273,6 +273,26 @@ const THEME = {
 
 const formatPrice = (price) => `₹${(price || 0).toLocaleString('en-IN')}`;
 
+const randomCouponAmount = () => {
+  const raw = Math.floor(Math.random() * (1000 - 20 + 1)) + 20;
+  return Math.round(raw / 10) * 10;
+};
+
+const generateRewardCoupons = (count) => {
+  const seenCodes = new Set();
+  const coupons = [];
+
+  while (coupons.length < count) {
+    const amount = randomCouponAmount();
+    const code = `BB${amount}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    if (seenCodes.has(code)) continue;
+    seenCodes.add(code);
+    coupons.push({ code, amount, used: false, createdAt: Date.now() + coupons.length });
+  }
+
+  return coupons;
+};
+
 // ==========================================
 // 4. COMPONENTS
 // ==========================================
@@ -285,9 +305,12 @@ const Toast = ({ message, visible }) => (
 
 // 🔥 3. SCRATCH CARD MODAL (NEW COMPONENT)
 // 🔥 3. SCRATCH CARD MODAL (UPDATED WITH SAFE COPY)
-const ScratchCardModal = ({ isOpen, onClose, rewardsCount }) => {
+const ScratchCardModal = ({ isOpen, onClose, rewardCoupons, onClaimCoupon }) => {
   const canvasRef = useRef(null);
   const [isScratched, setIsScratched] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const activeCoupon = rewardCoupons[currentIndex];
 
   useEffect(() => {
     if (!isOpen || !canvasRef.current) return;
@@ -299,6 +322,13 @@ const ScratchCardModal = ({ isOpen, onClose, rewardsCount }) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     setIsScratched(false);
+  }, [isOpen, currentIndex]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentIndex(0);
+      setIsScratched(false);
+    }
   }, [isOpen]);
 
   const scratch = (e) => {
@@ -336,7 +366,8 @@ const ScratchCardModal = ({ isOpen, onClose, rewardsCount }) => {
 
   // Safe Copy Function to bypass iframe restrictions
   const handleCopyCode = () => {
-    const codeToCopy = "BREW50";
+    if (!activeCoupon) return;
+    const codeToCopy = activeCoupon.code;
     
     // Fallback method for restricted environments
     const fallbackCopy = (text) => {
@@ -368,16 +399,33 @@ const ScratchCardModal = ({ isOpen, onClose, rewardsCount }) => {
     }
   };
 
-  if (!isOpen) return null;
+  const handleClaimAndContinue = () => {
+    if (!activeCoupon) return;
+    onClaimCoupon(activeCoupon);
+
+    if (currentIndex < rewardCoupons.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+      setIsScratched(false);
+      return;
+    }
+
+    onClose();
+  };
+
+  if (!isOpen || !activeCoupon) return null;
 
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
       <div className="bg-white dark:bg-[#1C1917] rounded-3xl p-8 max-w-sm w-full text-center relative overflow-hidden">
         <h2 className="text-2xl font-black text-[#2D241E] dark:text-white mb-2">Mystery Reward!</h2>
-        <p className="text-sm text-[#8A7B72] mb-6">You earned {rewardsCount} reward(s)! Scratch to reveal.</p>
+        <p className="text-sm text-[#8A7B72] mb-2">Reward {currentIndex + 1} of {rewardCoupons.length}</p>
+        <p className="text-sm text-[#8A7B72] mb-6">Scratch to reveal your coupon.</p>
         
         <div className="relative w-64 h-32 mx-auto bg-[#FDFCFB] border-2 border-[#D4B895] rounded-2xl flex items-center justify-center overflow-hidden touch-none">
-          <span className="text-2xl font-black text-[#6F4E37]">BREW50</span>
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-lg font-black text-[#6F4E37]">SAVE {formatPrice(activeCoupon.amount)}</span>
+            <span className="text-xs font-bold tracking-wider text-[#2D241E]">{activeCoupon.code}</span>
+          </div>
           <canvas 
             ref={canvasRef}
             width={256}
@@ -393,8 +441,8 @@ const ScratchCardModal = ({ isOpen, onClose, rewardsCount }) => {
             <button onClick={handleCopyCode} className="w-full py-3 mb-2 rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37]">
               Copy Code
             </button>
-            <button onClick={onClose} className={`w-full py-3 rounded-xl font-bold text-white bg-[#6F4E37]`}>
-              Close
+            <button onClick={handleClaimAndContinue} className={`w-full py-3 rounded-xl font-bold text-white bg-[#6F4E37]`}>
+              {currentIndex < rewardCoupons.length - 1 ? 'Claim & Next Card' : 'Claim & Close'}
             </button>
           </div>
         )}
@@ -712,7 +760,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative w-full max-w-5xl max-h-[95vh] ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down`}>
+      <div className={`relative w-full max-w-5xl max-h-[95vh] overflow-y-auto md:overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down`}>
         
         <button onClick={onClose} className="absolute top-4 right-4 z-20 p-2 bg-white/50 dark:bg-black/50 backdrop-blur-md rounded-full hover:bg-white dark:hover:bg-black transition-colors text-[#2D241E] dark:text-white shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
           <X size={20} />
@@ -730,7 +778,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto md:max-h-[95vh] hide-scrollbar">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start md:overflow-y-auto md:max-h-[95vh] hide-scrollbar">
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -867,7 +915,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
         <div className="relative aspect-[4/5] sm:aspect-square w-full rounded-xl overflow-hidden mb-4 bg-black/5 dark:bg-white/5 cursor-pointer" onClick={() => onQuickView(item)}>
           <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" fetchpriority="high" loading="lazy" />
           
-          <button onClick={handleFavToggle} className="absolute top-3 left-3 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-full shadow-md transition-transform hover:scale-110 z-10 min-h-[40px] min-w-[40px] flex items-center justify-center">
+          <button onClick={handleFavToggle} className="absolute top-3 right-3 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-full shadow-md transition-transform hover:scale-110 z-10 min-h-[40px] min-w-[40px] flex items-center justify-center">
             <Heart size={16} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
           </button>
 
@@ -1253,23 +1301,30 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
 // 5. CHECKOUT, ORDER TRACKING, HISTORY, & ADMIN
 // ==========================================
 
-const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, orderMode, tableNumber, onConfirm }) => {
+const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, availableCoupons, onRedeemCoupon, orderMode, tableNumber, onConfirm }) => {
   const [couponCode, setCouponCode] = useState('');
   const [localDiscount, setLocalDiscount] = useState(0);
+  const [showCoupons, setShowCoupons] = useState(false);
 
   // Sync initial discount if they already applied one in the Cart Drawer
   useEffect(() => {
     if (isOpen) {
       setLocalDiscount(appliedDiscount || 0);
-      setCouponCode(appliedDiscount === 50 ? 'BREW50' : appliedDiscount === 100 ? 'BREW100' : '');
+      setCouponCode('');
+      setShowCoupons(false);
     }
   }, [isOpen, appliedDiscount]);
 
   const handleApplyCoupon = () => {
     const code = couponCode.toUpperCase();
-    if (code === 'BREW50') setLocalDiscount(50);
-    else if (code === 'BREW100') setLocalDiscount(100);
-    else { alert("Invalid Coupon."); setLocalDiscount(0); }
+    const matched = availableCoupons.find((coupon) => coupon.code === code && !coupon.used);
+    if (!matched) {
+      alert("Invalid or used coupon.");
+      setLocalDiscount(0);
+      return;
+    }
+    setLocalDiscount(matched.amount);
+    onRedeemCoupon(matched.code);
   };
 
   if (!isOpen) return null;
@@ -1332,6 +1387,24 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                   <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 min-w-0 px-3 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
                   <button onClick={handleApplyCoupon} className={`w-[78px] shrink-0 px-3 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
                 </div>
+                <button onClick={() => setShowCoupons((prev) => !prev)} className="mt-2 text-xs font-bold text-[#6F4E37] dark:text-[#D4B895] hover:underline">
+                  View Coupons
+                </button>
+                {showCoupons && (
+                  <div className="mt-2 max-h-28 overflow-y-auto hide-scrollbar space-y-1">
+                    {availableCoupons.length === 0 && <p className="text-xs text-[#8A7B72]">No coupons earned yet.</p>}
+                    {availableCoupons.map((coupon) => (
+                      <button
+                        key={coupon.code}
+                        disabled={coupon.used}
+                        onClick={() => setCouponCode(coupon.code)}
+                        className={`w-full text-left px-2 py-1 rounded-md text-xs border ${coupon.used ? 'opacity-50 cursor-not-allowed border-black/10 dark:border-white/10' : 'border-[#6F4E37]/30 hover:bg-[#6F4E37]/10'}`}
+                      >
+                        <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)} {coupon.used ? '(Used)' : ''}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {localDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
               </div>
 
@@ -1507,13 +1580,15 @@ const OrderHistoryModal = ({ isOpen, onClose, history, onReorder }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#FAF7F2] dark:bg-[#12100E] p-4 sm:p-6 animate-fade-in">
-      <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
-        <div className="flex justify-between items-center mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-10 py-4">
+      <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col`}>
+        <div className="flex justify-between items-center mb-4 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-20 py-4">
           <h2 className="text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><History size={32} className="text-[#6F4E37]"/> Order History</h2>
           <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center">
              <X size={24} className="text-[#2D241E] dark:text-white" />
           </button>
         </div>
+
+        <div className="flex-1 overflow-y-auto hide-scrollbar pr-1">
 
         {history.length === 0 ? (
            <div className="flex flex-col items-center justify-center py-20 opacity-50">
@@ -1569,6 +1644,7 @@ const OrderHistoryModal = ({ isOpen, onClose, history, onReorder }) => {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
@@ -1580,8 +1656,8 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#FAF7F2] dark:bg-[#12100E] p-4 sm:p-6 animate-fade-in">
-      <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
-        <div className="flex justify-between items-center mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-10 py-4">
+      <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col`}>
+        <div className="flex justify-between items-center mb-4 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-20 py-4">
           <h2 className="text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Heart size={32} className="text-red-500 fill-red-500"/> Your Favorites</h2>
           <div className="flex items-center gap-2">
             <button
@@ -1595,6 +1671,8 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
             </button>
           </div>
         </div>
+
+        <div className="flex-1 overflow-y-auto hide-scrollbar pr-1">
 
         {favoriteItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 opacity-50">
@@ -1655,6 +1733,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
@@ -1849,17 +1928,26 @@ const FloatingCartBar = ({ cartCount, cartTotal, onOpenCart }) => {
 
 // 🔥 2. PROGRESS BAR (CART DRAWER UPDATE)
 // 🔥 2. PROGRESS BAR (CART DRAWER UPDATE)
-const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal, onProceedToCheckout, addToCart }) => {
+const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal, onProceedToCheckout, addToCart, availableCoupons, onRedeemCoupon }) => {
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [showCoupons, setShowCoupons] = useState(false);
 
-  useEffect(() => { if(cart.length === 0) setAppliedDiscount(0); }, [cart.length]);
+  useEffect(() => {
+    if(cart.length === 0) setAppliedDiscount(0);
+    setShowCoupons(false);
+  }, [cart.length]);
 
   const handleApplyCoupon = () => {
     const code = couponCode.toUpperCase();
-    if (code === 'BREW50') setAppliedDiscount(50);
-    else if (code === 'BREW100') setAppliedDiscount(100);
-    else { alert("Invalid Coupon."); setAppliedDiscount(0); }
+    const matched = availableCoupons.find((coupon) => coupon.code === code && !coupon.used);
+    if (!matched) {
+      alert("Invalid or used coupon.");
+      setAppliedDiscount(0);
+      return;
+    }
+    setAppliedDiscount(matched.amount);
+    onRedeemCoupon(matched.code);
   };
 
   const finalTotal = Math.max(0, (cartTotal || 0) - (appliedDiscount || 0)) + (cartTax || 0);
@@ -1968,6 +2056,24 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                 <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 min-w-0 px-3 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
                 <button onClick={handleApplyCoupon} className={`w-[78px] shrink-0 px-3 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
               </div>
+              <button onClick={() => setShowCoupons((prev) => !prev)} className="mt-2 text-xs font-bold text-[#6F4E37] dark:text-[#D4B895] hover:underline">
+                View Coupons
+              </button>
+              {showCoupons && (
+                <div className="mt-2 max-h-28 overflow-y-auto hide-scrollbar space-y-1">
+                  {availableCoupons.length === 0 && <p className="text-xs text-[#8A7B72]">No coupons earned yet.</p>}
+                  {availableCoupons.map((coupon) => (
+                    <button
+                      key={coupon.code}
+                      disabled={coupon.used}
+                      onClick={() => setCouponCode(coupon.code)}
+                      className={`w-full text-left px-2 py-1 rounded-md text-xs border ${coupon.used ? 'opacity-50 cursor-not-allowed border-black/10 dark:border-white/10' : 'border-[#6F4E37]/30 hover:bg-[#6F4E37]/10'}`}
+                    >
+                      <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)} {coupon.used ? '(Used)' : ''}
+                    </button>
+                  ))}
+                </div>
+              )}
               {appliedDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
             </div>
           )}
@@ -2180,6 +2286,7 @@ export default function App() {
       localStorage.removeItem('brewbite_ordered');
       localStorage.removeItem('brewbite_recent');
       localStorage.removeItem('brewbite_favs');
+      localStorage.removeItem('brewbite_coupons');
       localStorage.removeItem('brewbite_mode');
       localStorage.removeItem('brewbite_table');
       localStorage.removeItem('brewbite_mode_set');
@@ -2195,9 +2302,17 @@ export default function App() {
   const [toastState, setToastState] = useState({ visible: false, message: '' });
 
   // REWARD STATES
-  const [scratchRewards, setScratchRewards] = useState(0);
+  const [earnedCoupons, setEarnedCoupons] = useState(() => {
+    if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_coupons')) || [];
+    return [];
+  });
+  const [scratchQueue, setScratchQueue] = useState([]);
   const [showScratchCard, setShowScratchCard] = useState(false);
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('brewbite_coupons', JSON.stringify(earnedCoupons));
+  }, [earnedCoupons]);
 
   useEffect(() => {
     localStorage.setItem('brewbite_theme', isDarkMode ? 'dark' : 'light');
@@ -2393,7 +2508,7 @@ const handlePlaceOrder = (discountAmount) => {
     
     const rewardsCount = Math.floor(finalTotal / 500);
     if (rewardsCount > 0) {
-      setScratchRewards(rewardsCount);
+      setScratchQueue(generateRewardCoupons(rewardsCount));
       setShowScratchCard(true);
     }
 
@@ -2435,6 +2550,16 @@ const handlePlaceOrder = (discountAmount) => {
     showToast('Admin portal unlocked');
   };
 
+  const handleRedeemCoupon = (code) => {
+    setEarnedCoupons((prev) => prev.map((coupon) => (
+      coupon.code === code ? { ...coupon, used: true, usedAt: Date.now() } : coupon
+    )));
+  };
+
+  const handleClaimCoupon = (claimedCoupon) => {
+    setEarnedCoupons((prev) => [...prev, claimedCoupon]);
+  };
+
   const handleAcceptOrder = (orderId) => {
     setOrders(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Accepted' } : order));
     setOrderHistory(prev => prev.map(order => order.id === orderId ? { ...order, status: 'Accepted' } : order));
@@ -2465,7 +2590,15 @@ const handlePlaceOrder = (discountAmount) => {
       <div className={`w-full overflow-x-hidden min-h-screen transition-colors duration-300 ${THEME.bg} ${THEME.text}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
         
         {/* SCRATCH CARD TRIGGER */}
-        <ScratchCardModal isOpen={showScratchCard} onClose={() => setShowScratchCard(false)} rewardsCount={scratchRewards} />
+        <ScratchCardModal
+          isOpen={showScratchCard}
+          onClose={() => {
+            setShowScratchCard(false);
+            setScratchQueue([]);
+          }}
+          rewardCoupons={scratchQueue}
+          onClaimCoupon={handleClaimCoupon}
+        />
 
         <OrderModeModal 
           isOpen={isModeModalOpen && !isTableLocked} 
@@ -2562,6 +2695,8 @@ const handlePlaceOrder = (discountAmount) => {
           cartTotal={cartTotal}
           onProceedToCheckout={(discount) => { setPendingDiscount(discount); setIsCheckoutOpen(true); }}
           addToCart={addToCart}
+          availableCoupons={earnedCoupons}
+          onRedeemCoupon={handleRedeemCoupon}
         />
 <CheckoutModal
           isOpen={isCheckoutOpen}
@@ -2574,6 +2709,8 @@ const handlePlaceOrder = (discountAmount) => {
           cartTotal={cartTotal}
           cartTax={cartTax}
           appliedDiscount={pendingDiscount}
+          availableCoupons={earnedCoupons}
+          onRedeemCoupon={handleRedeemCoupon}
           orderMode={orderMode}
           tableNumber={tableNumber}
           // 👇 Change this line exactly like this:
