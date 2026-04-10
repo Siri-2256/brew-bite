@@ -273,17 +273,28 @@ const THEME = {
 
 const formatPrice = (price) => `₹${(price || 0).toLocaleString('en-IN')}`;
 
-const randomCouponAmount = () => {
-  const raw = Math.floor(Math.random() * (1000 - 20 + 1)) + 20;
-  return Math.round(raw / 10) * 10;
+const COUPON_MIN_AMOUNT = 20;
+const COUPON_MAX_AMOUNT = 250;
+const COUPON_STEP = 10;
+const COUPON_AMOUNT_POOL = Array.from(
+  { length: Math.floor((COUPON_MAX_AMOUNT - COUPON_MIN_AMOUNT) / COUPON_STEP) + 1 },
+  (_, idx) => COUPON_MIN_AMOUNT + idx * COUPON_STEP,
+);
+
+const randomCouponAmount = (usedAmounts = new Set()) => {
+  const available = COUPON_AMOUNT_POOL.filter((amount) => !usedAmounts.has(amount));
+  const pool = available.length ? available : COUPON_AMOUNT_POOL;
+  return pool[Math.floor(Math.random() * pool.length)];
 };
 
 const generateRewardCoupons = (count) => {
   const seenCodes = new Set();
+  const usedAmounts = new Set();
   const coupons = [];
 
   while (coupons.length < count) {
-    const amount = randomCouponAmount();
+    const amount = randomCouponAmount(usedAmounts);
+    if (COUPON_AMOUNT_POOL.includes(amount)) usedAmounts.add(amount);
     const code = `BB${amount}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     if (seenCodes.has(code)) continue;
     seenCodes.add(code);
@@ -2573,6 +2584,7 @@ export default function App() {
   };
 
   const [quickViewItem, setQuickViewItem] = useState(null);
+  const [quickViewSource, setQuickViewSource] = useState(null);
   const [dietFilter, setDietFilter] = useState('All');
   
   const [activeOrderId, setActiveOrderId] = useState(null);
@@ -2743,12 +2755,20 @@ useEffect(() => {
     });
     return () => activeIntervals.forEach(timer => timer && clearTimeout(timer));
   }, [orders]);
-  const handleQuickView = (item) => {
+  const handleQuickView = (item, source = 'menu') => {
+    setQuickViewSource(source);
     setQuickViewItem(item);
     setRecentlyViewed(prev => {
       const newRecent = [item.id, ...prev.filter(id => id !== item.id)].slice(0, 10);
       return newRecent;
     });
+  };
+
+  const handleCloseQuickView = () => {
+    setQuickViewItem(null);
+    if (quickViewSource === 'cart') setIsCartOpen(true);
+    if (quickViewSource === 'checkout') setIsCheckoutOpen(true);
+    setQuickViewSource(null);
   };
 
   const addToCart = (product, variant = null, overrideDesc = null, customizations = null, instructions = '', prepOption = '') => {
@@ -2960,7 +2980,7 @@ const handlePlaceOrder = (discountAmount) => {
           updateQuantity={updateQuantity} 
           toggleFavorite={toggleFavorite}
           favorites={favorites}
-          onQuickView={handleQuickView}
+          onQuickView={(item) => handleQuickView(item, 'menu')}
           onRemoveRecentlyViewed={(id) => setRecentlyViewed(prev => prev.filter(viewedId => viewedId !== id))}
           recentlyViewed={recentlyViewed}
           recentlyOrdered={recentlyOrdered}
@@ -2977,7 +2997,7 @@ const handlePlaceOrder = (discountAmount) => {
         <QuickViewModal 
           item={quickViewItem} 
           isOpen={!!quickViewItem} 
-          onClose={() => setQuickViewItem(null)} 
+          onClose={handleCloseQuickView} 
           addToCart={addToCart} 
           favorites={favorites}
           toggleFavorite={toggleFavorite}
@@ -2997,7 +3017,7 @@ const handlePlaceOrder = (discountAmount) => {
           onRedeemCoupon={handleRedeemCoupon}
           onQuickView={(item) => {
             setIsCartOpen(false);
-            handleQuickView(item);
+            handleQuickView(item, 'cart');
           }}
         />
 <CheckoutModal
@@ -3018,7 +3038,7 @@ const handlePlaceOrder = (discountAmount) => {
           addToCart={addToCart}
           onQuickView={(item) => {
             setIsCheckoutOpen(false);
-            handleQuickView(item);
+            handleQuickView(item, 'checkout');
           }}
           // 👇 Change this line exactly like this:
           onConfirm={(finalDiscount) => handlePlaceOrder(finalDiscount)} 
