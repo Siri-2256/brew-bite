@@ -465,18 +465,20 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
     if (isOpen) { setIsSuccess(false); setUpiId(''); setPaymentMethod('UPI'); }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      const validOrders = orders.filter(o => o.status !== 'Rejected');
+      const unpaidOrders = validOrders.filter(o => !o.isPaid);
+      setSelectedOrderIds(unpaidOrders.map((order) => order.id));
+    }
+  }, [isOpen, orders]);
+
   if (!isOpen) return null;
 
   // Filter out rejected orders, then split by payment status
   const validOrders = orders.filter(o => o.status !== 'Rejected');
   const unpaidOrders = validOrders.filter(o => !o.isPaid);
   const paidOrders = validOrders.filter(o => o.isPaid);
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedOrderIds(unpaidOrders.map((order) => order.id));
-    }
-  }, [isOpen, unpaidOrders]);
 
   const selectedUnpaidOrders = unpaidOrders.filter((order) => selectedOrderIds.includes(order.id));
   const totalToPay = selectedUnpaidOrders.reduce((sum, o) => sum + o.total, 0);
@@ -489,7 +491,7 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
           <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6"><CheckCircle2 size={40} /></div>
           <h2 className="text-2xl font-black text-[#2D241E] dark:text-white mb-2">{paymentMethod === 'UPI' ? 'Payment Successful!' : 'Order Confirmed!'}</h2>
           <p className="text-[#8A7B72] mb-8">{paymentMethod === 'UPI' ? 'Your bill is settled. Thank you!' : 'Please pay cash at the counter.'}</p>
-          <button onClick={() => { onClose(); document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className={`w-full py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 active:scale-95 ${THEME.primary}`}>Continue</button>
+          <button onClick={onClose} className={`w-full py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 active:scale-95 ${THEME.primary}`}>Continue</button>
         </div>
       </div>
     );
@@ -1896,17 +1898,17 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
         ) : (
           <div className="space-y-6">
             {orders.map(order => (
-              <div key={order.id} className={`p-6 rounded-2xl border-2 ${order.status === 'Pending' ? 'border-[#6F4E37]' : THEME.border} ${THEME.cardBg} shadow-sm`}>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-black text-[#2D241E] dark:text-white flex items-center gap-3">
+              <div key={order.id} className={`p-5 sm:p-6 rounded-2xl border-2 ${order.status === 'Pending' ? 'border-[#6F4E37]' : THEME.border} ${THEME.cardBg} shadow-sm`}>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
+                  <div className="min-w-0">
+                    <h3 className="text-lg sm:text-xl font-black text-[#2D241E] dark:text-white flex flex-wrap items-center gap-2 sm:gap-3 leading-tight">
                       Order #{order.id}
-                      {order.mode === 'Dine-In' && order.table && <span className="bg-[#6F4E37] text-white text-xs px-2 py-1 rounded-md flex items-center gap-1"><MapPin size={12}/> Table {order.table}</span>}
-                      {order.mode === 'Takeaway' && <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1"><Package size={12}/> Takeaway</span>}
+                      {order.mode === 'Dine-In' && order.table && <span className="bg-[#6F4E37] text-white text-xs px-2 py-1 rounded-md inline-flex items-center gap-1 whitespace-nowrap"><MapPin size={12}/> Table {order.table}</span>}
+                      {order.mode === 'Takeaway' && <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-md inline-flex items-center gap-1 whitespace-nowrap"><Package size={12}/> Takeaway</span>}
                     </h3>
                     <p className={`text-sm ${THEME.muted}`}>{new Date(order.timestamp).toLocaleTimeString()}</p>
                   </div>
-                  <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${order.status === 'Rejected' ? 'bg-red-100 text-red-700' : order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700 animate-pulse' : order.status === 'Ready' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                  <span className={`self-start sm:self-auto px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap ${order.status === 'Rejected' ? 'bg-red-100 text-red-700' : order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700 animate-pulse' : order.status === 'Ready' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
                     {order.status}
                   </span>
                 </div>
@@ -1938,7 +1940,7 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
                   ))}
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-black/5 dark:border-white/5">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-black/5 dark:border-white/5">
                   <span className="font-black text-2xl text-[#2D241E] dark:text-white">{formatPrice(order.total)}</span>
                   {order.status === 'Pending' && (
                     <div className="w-full sm:w-auto flex gap-2 sm:justify-end">
@@ -2190,8 +2192,8 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
               <div className="h-2 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
                 <div className="h-full bg-[#6F4E37] transition-all" style={{ width: `${progress}%` }} />
               </div>
-              <p className="text-[10px] mt-2 text-[#8A7B72] text-center">
-                Add <b>₹{remaining}</b> more to unlock {earnedRewards > 0 ? 'another' : 'a Mystery'} Reward
+                <p className="text-[10px] mt-2 text-[#8A7B72] text-center">
+                Add <b>₹{remaining}</b> more on this order to unlock another Reward
               </p>
             </div>
             {/* END PROGRESS BAR */}
