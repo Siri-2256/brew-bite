@@ -1327,6 +1327,22 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
     onRedeemCoupon(matched.code);
   };
 
+  const checkoutRecommendations = useMemo(() => {
+    if (cart.length === 0) return [];
+    const cartCategories = [...new Set(cart.map((item) => item.category))];
+    const cartIds = cart.map((item) => item.id.toString());
+    const candidates = [];
+
+    CATEGORIES.filter((cat) => cat !== 'All').forEach((cat) => {
+      const pick = MENU_ITEMS.find((item) => item.category === cat && !cartIds.includes(item.id.toString()));
+      if (pick) candidates.push(pick);
+    });
+
+    const prioritized = candidates.filter((item) => !cartCategories.includes(item.category));
+    const merged = [...prioritized, ...candidates.filter((item) => cartCategories.includes(item.category))];
+    return merged.slice(0, 4);
+  }, [cart]);
+
   if (!isOpen) return null;
   
   const finalTotal = Math.max(0, cartTotal - localDiscount) + cartTax;
@@ -1407,6 +1423,23 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                 )}
                 {localDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
               </div>
+
+              {checkoutRecommendations.length > 0 && (
+                <div className="pt-2">
+                  <h4 className="text-sm font-bold mb-3 text-[#2D241E] dark:text-white">Recommended For You</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {checkoutRecommendations.map((item) => (
+                      <div key={`checkout-reco-${item.id}`} className="flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5">
+                        <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover" loading="lazy" />
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold truncate text-[#2D241E] dark:text-white">{item.name}</p>
+                          <p className="text-[11px] text-[#8A7B72] dark:text-[#A89F95]">{formatPrice(item.price)}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex justify-between text-sm pt-2">
                 <span className={THEME.muted}>Subtotal</span>
@@ -2050,32 +2083,55 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
           )}
 
           {cart.length > 0 && (
-            <div className="pt-6 border-t border-black/10 dark:border-white/10">
-              <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-[#2D241E] dark:text-white"><Tag size={16}/> Apply Coupon</h4>
-              <div className="flex items-center gap-2 min-w-0">
-                <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 min-w-0 px-3 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
-                <button onClick={handleApplyCoupon} className={`w-[78px] shrink-0 px-3 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
+            <>
+              <div className="pt-6 border-t border-black/10 dark:border-white/10">
+                <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-[#2D241E] dark:text-white"><Tag size={16}/> Apply Coupon</h4>
+                <div className="flex items-center gap-2 min-w-0">
+                  <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder=" " className={`flex-1 min-w-0 px-3 py-2 rounded-xl border ${THEME.border} bg-transparent text-sm outline-none focus:border-[#6F4E37] text-[#2D241E] dark:text-white uppercase`} />
+                  <button onClick={handleApplyCoupon} className={`w-[78px] shrink-0 px-3 py-2 min-h-[48px] rounded-xl font-bold text-sm bg-black/5 dark:bg-white/10 text-[#2D241E] dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors`}>Apply</button>
+                </div>
+                <button onClick={() => setShowCoupons((prev) => !prev)} className="mt-2 text-xs font-bold text-[#6F4E37] dark:text-[#D4B895] hover:underline">
+                  View Coupons
+                </button>
+                {showCoupons && (
+                  <div className="mt-2 max-h-28 overflow-y-auto hide-scrollbar space-y-1">
+                    {availableCoupons.length === 0 && <p className="text-xs text-[#8A7B72]">No coupons earned yet.</p>}
+                    {availableCoupons.map((coupon) => (
+                      <button
+                        key={coupon.code}
+                        disabled={coupon.used}
+                        onClick={() => setCouponCode(coupon.code)}
+                        className={`w-full text-left px-2 py-1 rounded-md text-xs border ${coupon.used ? 'opacity-50 cursor-not-allowed border-black/10 dark:border-white/10' : 'border-[#6F4E37]/30 hover:bg-[#6F4E37]/10'}`}
+                      >
+                        <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)} {coupon.used ? '(Used)' : ''}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {appliedDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
               </div>
-              <button onClick={() => setShowCoupons((prev) => !prev)} className="mt-2 text-xs font-bold text-[#6F4E37] dark:text-[#D4B895] hover:underline">
-                View Coupons
-              </button>
-              {showCoupons && (
-                <div className="mt-2 max-h-28 overflow-y-auto hide-scrollbar space-y-1">
-                  {availableCoupons.length === 0 && <p className="text-xs text-[#8A7B72]">No coupons earned yet.</p>}
-                  {availableCoupons.map((coupon) => (
-                    <button
-                      key={coupon.code}
-                      disabled={coupon.used}
-                      onClick={() => setCouponCode(coupon.code)}
-                      className={`w-full text-left px-2 py-1 rounded-md text-xs border ${coupon.used ? 'opacity-50 cursor-not-allowed border-black/10 dark:border-white/10' : 'border-[#6F4E37]/30 hover:bg-[#6F4E37]/10'}`}
-                    >
-                      <span className="font-bold">{coupon.code}</span> • Save {formatPrice(coupon.amount)} {coupon.used ? '(Used)' : ''}
-                    </button>
-                  ))}
+
+              {recommendations.length > 0 && (
+                <div className="pt-3">
+                  <h4 className="text-sm font-bold mb-3 text-[#2D241E] dark:text-white">Recommended For You</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {recommendations.map((item) => (
+                      <button
+                        key={`cart-reco-${item.id}`}
+                        onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                        className="text-left flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                      >
+                        <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover" loading="lazy" />
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold truncate text-[#2D241E] dark:text-white">{item.name}</p>
+                          <p className="text-[11px] text-[#8A7B72] dark:text-[#A89F95]">{formatPrice(item.price)}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
-              {appliedDiscount > 0 && <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-bold flex items-center gap-1"><CheckCircle2 size={12}/> Coupon applied successfully!</p>}
-            </div>
+            </>
           )}
         </div>
 
