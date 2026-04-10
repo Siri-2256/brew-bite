@@ -459,6 +459,7 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
   const [paymentMethod, setPaymentMethod] = useState('UPI');
   const [upiId, setUpiId] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [selectedOrderIds, setSelectedOrderIds] = useState([]);
 
   useEffect(() => {
     if (isOpen) { setIsSuccess(false); setUpiId(''); setPaymentMethod('UPI'); }
@@ -471,7 +472,14 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
   const unpaidOrders = validOrders.filter(o => !o.isPaid);
   const paidOrders = validOrders.filter(o => o.isPaid);
 
-  const totalToPay = unpaidOrders.reduce((sum, o) => sum + o.total, 0);
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedOrderIds(unpaidOrders.map((order) => order.id));
+    }
+  }, [isOpen, unpaidOrders]);
+
+  const selectedUnpaidOrders = unpaidOrders.filter((order) => selectedOrderIds.includes(order.id));
+  const totalToPay = selectedUnpaidOrders.reduce((sum, o) => sum + o.total, 0);
   const totalPaid = paidOrders.reduce((sum, o) => sum + o.total, 0);
 
   if (isSuccess) {
@@ -502,10 +510,21 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
           ) : (
             <div className="mb-4 space-y-2">
               {unpaidOrders.map(o => (
-                <div key={o.id} className="flex justify-between items-center border-b border-black/5 dark:border-white/5 pb-2 last:border-0">
-                  <span className="text-sm font-semibold text-[#2D241E] dark:text-white">Order #{o.id}</span>
+                <label key={o.id} className="flex items-center gap-3 border-b border-black/5 dark:border-white/5 pb-2 last:border-0 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedOrderIds.includes(o.id)}
+                    onChange={(event) => {
+                      setSelectedOrderIds((prev) => event.target.checked
+                        ? [...prev, o.id]
+                        : prev.filter((id) => id !== o.id)
+                      )
+                    }}
+                    className="h-4 w-4 accent-[#6F4E37]"
+                  />
+                  <span className="flex-1 text-sm font-semibold text-[#2D241E] dark:text-white">Order #{o.id}</span>
                   <span className="text-sm font-bold text-[#6F4E37] dark:text-[#D4B895]">₹{o.total}</span>
-                </div>
+                </label>
               ))}
             </div>
           )}
@@ -549,7 +568,8 @@ const BillSettlementModal = ({ isOpen, onClose, orders, onSettleBill }) => {
             <button 
               onClick={() => { 
                 if (paymentMethod === 'UPI' && !upiId.includes('@')) return alert('Please enter a valid UPI ID containing "@"'); 
-                onSettleBill(); // 🔥 MARKS ORDERS AS PAID
+                if (selectedOrderIds.length === 0) return alert('Please select at least one order to pay.');
+                onSettleBill(selectedOrderIds);
                 setIsSuccess(true); 
               }} 
               className={`w-full py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 active:scale-95 ${THEME.primary}`}
@@ -1454,6 +1474,23 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                 </div>
               )}
 
+              {/* 🔥 PROGRESS BAR */}
+              <div className="bg-[#FAF7F2] dark:bg-[#1C1917] border border-[#D4B895]/50 p-4 rounded-2xl mt-2 shadow-sm">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-bold text-[#2D241E] dark:text-white flex items-center gap-1">
+                    <Trophy size={14} className="text-[#D4B895]"/> 
+                    {earnedRewards > 0 ? `${earnedRewards} Reward(s) Unlocked! 🎉` : 'Mystery Reward'}
+                  </span>
+                  <span className="text-[10px] font-black text-[#6F4E37] dark:text-[#D4B895]">₹{finalTotal} / ₹{nextMilestone}</span>
+                </div>
+                <div className="h-2 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#6F4E37] dark:bg-[#D4B895] transition-all duration-1000 ease-out" style={{ width: `${progress}%` }} />
+                </div>
+                <p className="text-[10px] mt-2 text-[#8A7B72] font-medium text-center">
+                  Add <span className="font-bold text-[#2D241E] dark:text-white">₹{remaining}</span> more on this order to unlock another Reward
+                </p>
+              </div>
+
               <div className="flex justify-between text-sm pt-2">
                 <span className={THEME.muted}>Subtotal</span>
                 <span className="font-medium text-[#2D241E] dark:text-white">{formatPrice(cartTotal)}</span>
@@ -1472,23 +1509,6 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
               <div className="flex justify-between items-center pt-3 border-t border-black/10 dark:border-white/10">
                 <span className="font-bold text-xl text-[#2D241E] dark:text-white">Total Amount</span>
                 <span className="font-black text-2xl text-[#6F4E37] dark:text-[#D4B895]">{formatPrice(finalTotal)}</span>
-              </div>
-              
-              {/* 🔥 PROGRESS BAR */}
-              <div className="bg-[#FAF7F2] dark:bg-[#1C1917] border border-[#D4B895]/50 p-4 rounded-2xl mt-6 mb-2 shadow-sm">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold text-[#2D241E] dark:text-white flex items-center gap-1">
-                    <Trophy size={14} className="text-[#D4B895]"/> 
-                    {earnedRewards > 0 ? `${earnedRewards} Reward(s) Unlocked! 🎉` : 'Mystery Reward'}
-                  </span>
-                  <span className="text-[10px] font-black text-[#6F4E37] dark:text-[#D4B895]">₹{finalTotal} / ₹{nextMilestone}</span>
-                </div>
-                <div className="h-2 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#6F4E37] dark:bg-[#D4B895] transition-all duration-1000 ease-out" style={{ width: `${progress}%` }} />
-                </div>
-                <p className="text-[10px] mt-2 text-[#8A7B72] font-medium text-center">
-                  Add <span className="font-bold text-[#2D241E] dark:text-white">₹{remaining}</span> more on this order to unlock another Reward
-                </p>
               </div>
 
               <button onClick={onClose} className="w-full py-3 mt-4 rounded-xl font-bold text-[#6F4E37] dark:text-[#D4B895] bg-[#6F4E37]/10 dark:bg-[#D4B895]/10 hover:bg-[#6F4E37]/20 transition-colors min-h-[48px]">
@@ -2808,10 +2828,9 @@ const handlePlaceOrder = (discountAmount) => {
           isOpen={isBillModalOpen} 
           onClose={() => setIsBillModalOpen(false)} 
           orders={orders} 
-          onSettleBill={() => {
-             // Marks all current unpaid orders for this session as "isPaid: true"
-             setOrders(prev => prev.map(o => o.mode === orderMode && o.table === tableNumber && o.status !== 'Rejected' && !o.isPaid ? { ...o, isPaid: true } : o));
-             setOrderHistory(prev => prev.map(o => o.mode === orderMode && o.table === tableNumber && o.status !== 'Rejected' && !o.isPaid ? { ...o, isPaid: true } : o));
+           onSettleBill={(selectedOrderIds) => {
+             setOrders(prev => prev.map(o => selectedOrderIds.includes(o.id) ? { ...o, isPaid: true } : o));
+             setOrderHistory(prev => prev.map(o => selectedOrderIds.includes(o.id) ? { ...o, isPaid: true } : o));
           }}
         />
 
