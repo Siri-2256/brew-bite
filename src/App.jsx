@@ -1704,40 +1704,36 @@ const OrderStatusScreen = ({ activeOrders, onClose, orderReviews = {}, onSubmitR
 
                       {order.status === 'Served' && (
                         <div className="mt-4 pt-3 border-t border-black/5 dark:border-white/5">
-                          {review ? (
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1"><CheckCircle2 size={12}/> Review Submitted</span>
-                              </div>
-                              {review.items.map((entry) => (
-                                <div key={`${order.id}-${entry.key}`} className="flex items-center justify-between text-xs">
-                                  <span className="font-semibold text-[#2D241E] dark:text-white truncate pr-2">{entry.name}</span>
-                                  <div className="flex items-center gap-0.5">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <Star
-                                        key={star}
-                                        size={13}
-                                        className={star <= entry.stars ? 'text-yellow-500' : 'text-gray-300'}
-                                        fill={star <= entry.stars ? 'currentColor' : 'none'}
-                                      />
-                                    ))}
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() => setReviewEditorOrderId((prev) => (prev === order.id ? null : order.id))}
+                              className={`px-3 py-2 text-xs font-bold rounded-lg border flex items-center gap-1 ${review ? 'border-green-600/40 text-green-700 dark:text-green-400 hover:bg-green-500/10' : 'border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10'}`}
+                            >
+                              {review ? <CheckCircle2 size={12}/> : null}
+                              {review ? 'Review Submitted' : 'Review Items'}
+                            </button>
+                          </div>
+
+                          {reviewEditorOrderId === order.id && (
+                            <div className="space-y-3 mt-3">
+                              {review ? (
+                                review.items.map((entry) => (
+                                  <div key={`${order.id}-${entry.key}`} className="flex items-center justify-between text-xs">
+                                    <span className="font-semibold text-[#2D241E] dark:text-white truncate pr-2">{entry.name}</span>
+                                    <div className="flex items-center gap-0.5">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                          key={star}
+                                          size={13}
+                                          className={star <= entry.stars ? 'text-yellow-500' : 'text-gray-300'}
+                                          fill={star <= entry.stars ? 'currentColor' : 'none'}
+                                        />
+                                      ))}
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <>
-                              {reviewEditorOrderId !== order.id ? (
-                                <div className="flex justify-end">
-                                  <button
-                                    onClick={() => setReviewEditorOrderId(order.id)}
-                                    className="px-3 py-2 text-xs font-bold rounded-lg border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10"
-                                  >
-                                    Review Items
-                                  </button>
-                                </div>
+                                ))
                               ) : (
-                                <div className="space-y-3">
+                                <>
                                   {order.items.map((item, idx) => {
                                     const key = item.uniqueId || `${order.id}-${idx}`;
                                     const stars = draftForOrder[key] || 0;
@@ -1789,9 +1785,9 @@ const OrderStatusScreen = ({ activeOrders, onClose, orderReviews = {}, onSubmitR
                                       <CheckCircle2 size={12}/> Submit
                                     </button>
                                   </div>
-                                </div>
+                                </>
                               )}
-                            </>
+                            </div>
                           )}
                         </div>
                       )}
@@ -2029,7 +2025,7 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-fade-in bg-[#FAF7F2] dark:bg-[#12100E]">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
-        <div className="mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white/95 dark:bg-[#1C1917]/95 z-30 py-4 backdrop-blur-md">
+        <div className="mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 -mx-6 md:-mx-10 px-6 md:px-10 bg-white/95 dark:bg-[#1C1917]/95 z-40 py-4 backdrop-blur-md">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#2D241E] dark:text-white flex items-center gap-3 leading-tight"><Utensils size={30} className="text-[#6F4E37]"/> Kitchen Dashboard</h2>
             <button onClick={onClose} className="w-full sm:w-auto justify-center px-5 py-2 min-h-[48px] bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full hover:bg-red-200 transition-colors font-bold text-sm flex items-center gap-2">
