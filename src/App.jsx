@@ -428,6 +428,7 @@ const ScratchCardModal = ({ isOpen, onClose, rewardCoupons, onClaimCoupon }) => 
           </div>
           <canvas 
             ref={canvasRef}
+            key={`scratch-card-${currentIndex}`}
             width={256}
             height={128}
             className="absolute inset-0 cursor-pointer"
@@ -1368,7 +1369,6 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
              <div className="bg-black/5 dark:bg-white/5 p-5 rounded-2xl">
                <div className="flex justify-between items-start mb-4 border-b border-black/10 dark:border-white/10 pb-2">
                  <h3 className="font-bold text-[#2D241E] dark:text-white text-lg">Order Details</h3>
-                 <button onClick={onBackToCart} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-black/20 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center" title="Back to cart"><X size={16} className="text-[#2D241E] dark:text-white"/></button>
                </div>
                <div className="flex items-center gap-2 mb-4 bg-white dark:bg-[#1C1917] p-3 rounded-xl shadow-sm w-max">
                   {orderMode === 'Dine-In' ? <MapPin size={18} className="text-[#6F4E37]"/> : <Package size={18} className="text-[#6F4E37]"/>}
@@ -1431,20 +1431,20 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
               {checkoutRecommendations.length > 0 && (
                 <div className="pt-2">
                   <h4 className="text-sm font-bold mb-3 text-[#2D241E] dark:text-white">Recommended For You</h4>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar -mx-1 px-1 snap-x snap-mandatory">
                     {checkoutRecommendations.map((item) => (
-                      <div key={`checkout-reco-${item.id}`} onClick={() => onQuickView(item)} className="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
-                        <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover" loading="lazy" />
+                      <div key={`checkout-reco-${item.id}`} onClick={() => onQuickView(item)} className="cursor-pointer snap-start shrink-0 w-[220px] sm:w-[240px] flex items-center gap-3 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                        <img src={item.image} alt={item.name} className="w-14 h-14 rounded-lg object-cover shrink-0" loading="lazy" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold truncate text-[#2D241E] dark:text-white">{item.name}</p>
-                          <p className="text-[11px] text-[#8A7B72] dark:text-[#A89F95]">{formatPrice(item.price)}</p>
+                          <p className="text-sm font-bold leading-tight text-[#2D241E] dark:text-white break-words">{item.name}</p>
+                          <p className="text-[12px] text-[#8A7B72] dark:text-[#A89F95] mt-0.5">{formatPrice(item.price)}</p>
                         </div>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
                           }}
-                          className="px-2 py-1 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10"
+                          className="px-3 py-1.5 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10 shrink-0"
                         >
                           Add
                         </button>
@@ -1487,7 +1487,7 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                   <div className="h-full bg-[#6F4E37] dark:bg-[#D4B895] transition-all duration-1000 ease-out" style={{ width: `${progress}%` }} />
                 </div>
                 <p className="text-[10px] mt-2 text-[#8A7B72] font-medium text-center">
-                  Add <span className="font-bold text-[#2D241E] dark:text-white">₹{remaining}</span> more to unlock {earnedRewards > 0 ? 'another' : 'a Mystery'} Reward
+                  Add <span className="font-bold text-[#2D241E] dark:text-white">₹{remaining}</span> more on this order to unlock another Reward
                 </p>
               </div>
 
@@ -1614,7 +1614,7 @@ const OrderStatusScreen = ({ activeOrders, onClose }) => {
         </div>
 
         <div className="pt-4 mt-auto border-t border-black/5 dark:border-white/5">
-          <button onClick={() => { onClose(); document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className={`w-full py-4 min-h-[56px] rounded-xl font-bold text-lg transition-transform hover:scale-[1.02] active:scale-95 shadow-xl ${THEME.primary}`}>
+          <button onClick={onClose} className={`w-full py-4 min-h-[56px] rounded-xl font-bold text-lg transition-transform hover:scale-[1.02] active:scale-95 shadow-xl ${THEME.primary}`}>
             Continue Ordering
           </button>
         </div>
