@@ -1218,6 +1218,8 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                   {recentlyOrdered.map(id => {
                     const item = MENU_ITEMS.find(i => i.id === id);
                     if(!item) return null;
+                    const matchingCartItems = cart.filter(cartItem => cartItem.id === item.id);
+                    const cartQty = matchingCartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
                     return (
                       <div key={`ordered-${id}`} className={`shrink-0 w-64 flex flex-col p-3 rounded-2xl ${THEME.cardBg} border ${THEME.border} shadow-sm group hover:shadow-md transition-shadow`}>
                         <div className="flex gap-3 mb-3 cursor-pointer" onClick={() => onQuickView(item)}>
@@ -1227,9 +1229,34 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                             <p className={`text-xs ${THEME.muted}`}>{formatPrice(item.price)}</p>
                           </div>
                         </div>
-                        <button onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')} className="mt-auto w-full py-3 min-h-[48px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] group-hover:bg-[#6F4E37] group-hover:text-white transition-colors">
-                          Add to Cart
-                        </button>
+                        {cartQty > 0 ? (
+                          <div className="mt-auto w-full flex items-center justify-between bg-[#6F4E37] text-white rounded-lg px-2 py-1.5 min-h-[48px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const target = matchingCartItems[0];
+                                if (target) updateQuantity(target.uniqueId, -1);
+                              }}
+                              className="p-1.5 hover:bg-white/20 rounded-md transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                            >
+                              <Minus size={16} strokeWidth={2.5}/>
+                            </button>
+                            <span className="text-base font-bold w-6 text-center">{cartQty}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                              }}
+                              className="p-1.5 hover:bg-white/20 rounded-md transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                            >
+                              <Plus size={16} strokeWidth={2.5}/>
+                            </button>
+                          </div>
+                        ) : (
+                          <button onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')} className="mt-auto w-full py-3 min-h-[48px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] group-hover:bg-[#6F4E37] group-hover:text-white transition-colors">
+                            Add to Cart
+                          </button>
+                        )}
                       </div>
                     )
                   })}
@@ -1246,6 +1273,8 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                   {recentlyViewed.map(id => {
                     const item = MENU_ITEMS.find(i => i.id === id);
                     if(!item) return null;
+                    const matchingCartItems = cart.filter(cartItem => cartItem.id === item.id);
+                    const cartQty = matchingCartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
                     return (
                       <div key={`recent-${id}`} className={`relative shrink-0 w-56 flex flex-col gap-3 p-3 rounded-xl ${THEME.cardBg} border ${THEME.border} shadow-sm hover:shadow-md transition-shadow min-h-[150px]`}>
                         <button
@@ -1267,15 +1296,40 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                           </div>
                         </div>
 
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
-                          }}
-                          className="mt-auto w-full py-2.5 min-h-[44px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37] hover:text-white transition-colors"
-                        >
-                          Add to Cart
-                        </button>
+                        {cartQty > 0 ? (
+                          <div className="mt-auto w-full flex items-center justify-between bg-[#6F4E37] text-white rounded-lg px-2 py-1.5 min-h-[44px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const target = matchingCartItems[0];
+                                if (target) updateQuantity(target.uniqueId, -1);
+                              }}
+                              className="p-1 hover:bg-white/20 rounded-md transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center"
+                            >
+                              <Minus size={14} strokeWidth={2.5}/>
+                            </button>
+                            <span className="text-sm font-bold w-6 text-center">{cartQty}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                              }}
+                              className="p-1 hover:bg-white/20 rounded-md transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center"
+                            >
+                              <Plus size={14} strokeWidth={2.5}/>
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                            }}
+                            className="mt-auto w-full py-2.5 min-h-[44px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37] hover:text-white transition-colors"
+                          >
+                            Add to Cart
+                          </button>
+                        )}
                       </div>
                     )
                   })}
@@ -1458,7 +1512,7 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                       <div key={`checkout-reco-${item.id}`} onClick={() => onQuickView(item)} className="cursor-pointer snap-start shrink-0 w-[220px] sm:w-[240px] flex items-center gap-3 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                         <img src={item.image} alt={item.name} className="w-14 h-14 rounded-lg object-cover shrink-0" loading="lazy" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-bold leading-tight text-[#2D241E] dark:text-white break-words">{item.name}</p>
+                          <p className="text-sm font-bold leading-tight text-[#2D241E] dark:text-white truncate">{item.name}</p>
                           <p className="text-[12px] text-[#8A7B72] dark:text-[#A89F95] mt-0.5">{formatPrice(item.price)}</p>
                         </div>
                         <button
@@ -1493,6 +1547,10 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                 </p>
               </div>
 
+              <button onClick={onClose} className="w-full py-3 mt-2 rounded-xl font-bold text-[#6F4E37] dark:text-[#D4B895] bg-[#6F4E37]/10 dark:bg-[#D4B895]/10 hover:bg-[#6F4E37]/20 transition-colors min-h-[48px]">
+                Add More Items
+              </button>
+
               <div className="flex justify-between text-sm pt-2">
                 <span className={THEME.muted}>Subtotal</span>
                 <span className="font-medium text-[#2D241E] dark:text-white">{formatPrice(cartTotal)}</span>
@@ -1512,10 +1570,6 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
                 <span className="font-bold text-xl text-[#2D241E] dark:text-white">Total Amount</span>
                 <span className="font-black text-2xl text-[#6F4E37] dark:text-[#D4B895]">{formatPrice(finalTotal)}</span>
               </div>
-
-              <button onClick={onClose} className="w-full py-3 mt-4 rounded-xl font-bold text-[#6F4E37] dark:text-[#D4B895] bg-[#6F4E37]/10 dark:bg-[#D4B895]/10 hover:bg-[#6F4E37]/20 transition-colors min-h-[48px]">
-                Add More Items
-              </button>
             </div>
           </div>
 
@@ -1538,7 +1592,20 @@ const OrderStatusScreen = ({ activeOrders, onClose }) => {
     return () => clearInterval(interval);
   }, []);
 
-  if (!activeOrders || activeOrders.length === 0) return null;
+  if (!activeOrders || activeOrders.length === 0) {
+    return (
+      <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#FAF7F2]/90 dark:bg-[#12100E]/90 backdrop-blur-md animate-fade-in overflow-y-auto">
+        <div className={`max-w-md w-full text-center py-8 px-6 rounded-3xl shadow-2xl border ${THEME.border} ${THEME.cardBg} relative`}>
+          <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors z-10"><X size={20} className="text-[#2D241E] dark:text-white"/></button>
+          <h2 className="text-2xl font-black text-[#2D241E] dark:text-white mb-3 mt-2">Track Your Orders</h2>
+          <p className="text-sm text-[#8A7B72] mb-6">No active orders right now.</p>
+          <button onClick={onClose} className={`w-full py-4 min-h-[56px] rounded-xl font-bold text-lg transition-transform hover:scale-[1.02] active:scale-95 shadow-xl ${THEME.primary}`}>
+            Continue Ordering
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const steps = [
     { label: 'Accepted', icon: <CheckCircle2 size={16} /> },
@@ -1862,7 +1929,7 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-fade-in bg-[#FAF7F2] dark:bg-[#12100E]">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-y-auto ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 hide-scrollbar`}>
-        <div className="mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-10 py-4">
+        <div className="mb-8 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white/95 dark:bg-[#1C1917]/95 z-30 py-4 backdrop-blur-md">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#2D241E] dark:text-white flex items-center gap-3 leading-tight"><Utensils size={30} className="text-[#6F4E37]"/> Kitchen Dashboard</h2>
             <button onClick={onClose} className="w-full sm:w-auto justify-center px-5 py-2 min-h-[48px] bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full hover:bg-red-200 transition-colors font-bold text-sm flex items-center gap-2">
@@ -1898,7 +1965,7 @@ const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) =
         ) : (
           <div className="space-y-6">
             {orders.map(order => (
-              <div key={order.id} className={`p-5 sm:p-6 rounded-2xl border-2 ${order.status === 'Pending' ? 'border-[#6F4E37]' : THEME.border} ${THEME.cardBg} shadow-sm`}>
+              <div key={order.id} className={`overflow-hidden p-5 sm:p-6 rounded-2xl border-2 ${order.status === 'Pending' ? 'border-[#6F4E37]' : THEME.border} ${THEME.cardBg} shadow-sm`}>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
                   <div className="min-w-0">
                     <h3 className="text-lg sm:text-xl font-black text-[#2D241E] dark:text-white flex flex-wrap items-center gap-2 sm:gap-3 leading-tight">
@@ -2175,59 +2242,52 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                   </div>
                 </div>
               )}
+
+              <div className="bg-[#FAF7F2] dark:bg-[#1C1917] border border-[#D4B895]/50 p-4 rounded-2xl mt-2 shadow-sm">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-bold text-[#2D241E] dark:text-white">
+                    {earnedRewards > 0 ? `🎁 ${earnedRewards} Reward(s) Unlocked!` : '🎁 Mystery Reward'}
+                  </span>
+                  <span className="text-[10px] font-black text-[#6F4E37] dark:text-[#D4B895]">₹{cartTotal} / ₹{nextMilestone}</span>
+                </div>
+                <div className="h-2 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#6F4E37] transition-all" style={{ width: `${progress}%` }} />
+                </div>
+                <p className="text-[10px] mt-2 text-[#8A7B72] text-center">
+                  Add <b>₹{remaining}</b> more on this order to unlock another Reward
+                </p>
+              </div>
+
+              <button onClick={() => setIsCartOpen(false)} className="w-full py-3 min-h-[48px] rounded-xl font-bold text-sm bg-[#6F4E37]/10 text-[#6F4E37] dark:bg-[#D4B895]/10 dark:text-[#D4B895] hover:bg-[#6F4E37]/20 dark:hover:bg-[#D4B895]/20 transition-colors">
+                + Add More Items
+              </button>
+
+              <div className="space-y-3 pb-2">
+                <div className="flex justify-between text-sm">
+                  <span className={THEME.muted}>Subtotal</span>
+                  <span className="font-medium text-[#2D241E] dark:text-white">{formatPrice(cartTotal)}</span>
+                </div>
+                {appliedDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600 dark:text-green-400 font-bold">
+                    <span>Discount</span>
+                    <span>-{formatPrice(appliedDiscount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className={THEME.muted}>Taxes & Fees</span>
+                  <span className="font-medium text-[#2D241E] dark:text-white">{formatPrice(cartTax)}</span>
+                </div>
+                <div className="flex justify-between items-center pt-3 border-t border-black/10 dark:border-white/10">
+                  <span className="font-bold text-xl text-[#2D241E] dark:text-white">Total</span>
+                  <span className="font-bold text-xl text-[#2D241E] dark:text-white">{formatPrice(finalTotal)}</span>
+                </div>
+              </div>
             </>
           )}
         </div>
 
         {cart.length > 0 && (
           <div className={`p-6 border-t ${THEME.border} bg-black/[0.02] dark:bg-white/[0.02]`}>
-            {/* 🔥 ADD THIS PROGRESS BAR ABOVE PLACE ORDER BUTTON */}
-            <div className="bg-[#FAF7F2] dark:bg-[#1C1917] border border-[#D4B895]/50 p-4 rounded-2xl mb-4 shadow-sm">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold text-[#2D241E] dark:text-white">
-                  {earnedRewards > 0 ? `🎁 ${earnedRewards} Reward(s) Unlocked!` : '🎁 Mystery Reward'}
-                </span>
-                <span className="text-[10px] font-black text-[#6F4E37] dark:text-[#D4B895]">₹{cartTotal} / ₹{nextMilestone}</span>
-              </div>
-              <div className="h-2 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-[#6F4E37] transition-all" style={{ width: `${progress}%` }} />
-              </div>
-                <p className="text-[10px] mt-2 text-[#8A7B72] text-center">
-                Add <b>₹{remaining}</b> more on this order to unlock another Reward
-              </p>
-            </div>
-            {/* END PROGRESS BAR */}
-            
-            <button onClick={() => setIsCartOpen(false)} className="w-full py-3 min-h-[48px] rounded-xl font-bold text-sm bg-[#6F4E37]/10 text-[#6F4E37] dark:bg-[#D4B895]/10 dark:text-[#D4B895] hover:bg-[#6F4E37]/20 dark:hover:bg-[#D4B895]/20 transition-colors mb-6">
-              + Add More Items
-            </button>
-
-
-
-
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between text-sm">
-                <span className={THEME.muted}>Subtotal</span>
-                <span className="font-medium text-[#2D241E] dark:text-white">{formatPrice(cartTotal)}</span>
-              </div>
-              {appliedDiscount > 0 && (
-                <div className="flex justify-between text-sm text-green-600 dark:text-green-400 font-bold">
-                  <span>Discount</span>
-                  <span>-{formatPrice(appliedDiscount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-sm">
-                <span className={THEME.muted}>Taxes & Fees</span>
-                <span className="font-medium text-[#2D241E] dark:text-white">{formatPrice(cartTax)}</span>
-              </div>
-              <div className="flex justify-between items-center pt-3 border-t border-black/10 dark:border-white/10">
-                <span className="font-bold text-xl text-[#2D241E] dark:text-white">Total</span>
-                <span className="font-bold text-xl text-[#2D241E] dark:text-white">{formatPrice(finalTotal)}</span>
-              </div>
-            </div>
-
-
-            
             <button onClick={() => { setIsCartOpen(false); onProceedToCheckout(appliedDiscount); }} className={`w-full py-4 min-h-[56px] rounded-full font-bold text-xl flex items-center justify-center gap-3 transition-transform shadow-[0_10px_20px_rgba(111,78,55,0.3)] ${THEME.primary} hover:scale-[1.05] active:scale-95`}>
               Place Order <ArrowRight size={20} strokeWidth={3} />
             </button>
@@ -2316,12 +2376,12 @@ export default function App() {
   });
 
   const [recentlyViewed, setRecentlyViewed] = useState(() => {
-    if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_recent')) || [];
+    if (typeof window !== 'undefined') return (JSON.parse(localStorage.getItem('brewbite_recent')) || []).slice(0, 10);
     return [];
   });
 
   const [recentlyOrdered, setRecentlyOrdered] = useState(() => {
-    if (typeof window !== 'undefined') return JSON.parse(localStorage.getItem('brewbite_ordered')) || [];
+    if (typeof window !== 'undefined') return (JSON.parse(localStorage.getItem('brewbite_ordered')) || []).slice(0, 10);
     return [];
   });
 
@@ -2558,7 +2618,7 @@ useEffect(() => {
   const handleQuickView = (item) => {
     setQuickViewItem(item);
     setRecentlyViewed(prev => {
-      const newRecent = [item.id, ...prev.filter(id => id !== item.id)].slice(0, 5);
+      const newRecent = [item.id, ...prev.filter(id => id !== item.id)].slice(0, 10);
       return newRecent;
     });
   };
@@ -2613,7 +2673,7 @@ const handlePlaceOrder = (discountAmount) => {
     }
 
     const cartItemIds = cart.map(c => c.id);
-    setRecentlyOrdered(prev => { const newRecents = [...new Set([...cartItemIds, ...prev])].slice(0, 5); return newRecents; });
+    setRecentlyOrdered(prev => { const newRecents = [...new Set([...cartItemIds, ...prev])].slice(0, 10); return newRecents; });
 
     // 🔥 FIX: Added "earnedRewards: rewardsCount" so the order remembers it!
     const newOrder = { 
@@ -2716,7 +2776,7 @@ const handlePlaceOrder = (discountAmount) => {
           isCartAnimating={isCartAnimating} 
           unreadNotif={unreadNotif}
           adminBadgeCount={adminActiveOrders.filter(o => o.status === 'Pending').length}
-          onNotifClick={() => { setUnreadNotif(0); if(activeOrderId) setIsStatusOpen(true); else showToast("No active orders to track."); }}
+          onNotifClick={() => { setUnreadNotif(0); setIsStatusOpen(true); }}
           orderMode={orderMode}
           tableNumber={tableNumber}
           onModeChangeClick={() => setIsModeModalOpen(true)}
