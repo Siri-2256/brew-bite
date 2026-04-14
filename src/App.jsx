@@ -1115,6 +1115,48 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
     return results;
   }, [activeCategory, dietFilter, searchQuery, sortOrder]);
 
+  const orderAgainRecommendations = useMemo(() => {
+    if (recentlyOrdered.length === 0) return [];
+
+    const recentlyOrderedIds = new Set(recentlyOrdered);
+    const cartIds = new Set(cart.map((item) => item.id));
+    const blockedIds = new Set([...recentlyOrderedIds, ...cartIds]);
+
+    const orderedCategories = new Set(
+      recentlyOrdered
+        .map((id) => MENU_ITEMS.find((item) => item.id === id)?.category)
+        .filter(Boolean),
+    );
+
+    const allCategories = CATEGORIES.filter((cat) => cat !== 'All');
+    const prioritizedCategories = [
+      ...allCategories.filter((cat) => !orderedCategories.has(cat)),
+      ...allCategories.filter((cat) => orderedCategories.has(cat)),
+    ];
+
+    const picks = [];
+    const pickedCategories = new Set();
+
+    prioritizedCategories.forEach((category) => {
+      if (picks.length >= 4 || pickedCategories.has(category)) return;
+
+      const preferred = MENU_ITEMS.find(
+        (item) => item.category === category && !blockedIds.has(item.id) && item.isPopular,
+      );
+      const fallback = MENU_ITEMS.find(
+        (item) => item.category === category && !blockedIds.has(item.id),
+      );
+      const selected = preferred || fallback;
+
+      if (!selected) return;
+      picks.push(selected);
+      pickedCategories.add(category);
+      blockedIds.add(selected.id);
+    });
+
+    return picks;
+  }, [recentlyOrdered, cart]);
+
   return (
     <section id="menu" className={`py-20 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-24 bg-black/[0.02] dark:bg-white/[0.02] w-full relative scroll-mt-24`}>
       <div id="menu-grid" className="w-full mx-auto space-y-10 max-w-[1600px]">
@@ -1236,7 +1278,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                     const cartQty = matchingCartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
                     return (
                       <div key={`ordered-${id}`} className={`shrink-0 w-64 flex flex-col p-3 rounded-2xl ${THEME.cardBg} border ${THEME.border} shadow-sm group hover:shadow-md transition-shadow`}>
-                        <div className="flex gap-3 mb-3 cursor-pointer" onClick={() => onQuickView(item)}>
+                        <div className="flex gap-3 mb-3 cursor-pointer" onClick={() => onQuickView(item, 'order-again')}>
                           <img src={item.image} className="w-16 h-16 rounded-xl object-cover" fetchpriority="high" loading="lazy" />
                           <div>
                             <p className="text-sm font-bold text-[#2D241E] dark:text-white leading-tight mb-1">{item.name}</p>
@@ -1275,6 +1317,36 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                     )
                   })}
                 </div>
+
+                {orderAgainRecommendations.length > 0 && (
+                  <div className="pt-2">
+                    <h4 className="text-sm font-bold mb-3 text-[#2D241E] dark:text-white">Recommended For You</h4>
+                    <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar -mx-1 px-1 snap-x snap-mandatory">
+                      {orderAgainRecommendations.map((item) => (
+                        <div
+                          key={`order-again-reco-${item.id}`}
+                          onClick={() => onQuickView(item, 'order-again')}
+                          className="cursor-pointer snap-start shrink-0 w-[220px] sm:w-[240px] flex items-center gap-3 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                        >
+                          <img src={item.image} alt={item.name} className="w-14 h-14 rounded-lg object-cover shrink-0" loading="lazy" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-bold leading-tight text-[#2D241E] dark:text-white truncate">{item.name}</p>
+                            <p className="text-[12px] text-[#8A7B72] dark:text-[#A89F95] mt-0.5">{formatPrice(item.price)}</p>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                            }}
+                            className="px-3 py-1.5 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10 shrink-0"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             
@@ -1302,7 +1374,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                           <Trash2 size={14} />
                         </button>
 
-                        <div onClick={() => onQuickView(item)} className="flex items-center gap-3 cursor-pointer pr-8">
+                        <div onClick={() => onQuickView(item, 'recently-viewed')} className="flex items-center gap-3 cursor-pointer pr-8">
                           <img src={item.image} className="w-14 h-14 rounded-lg object-cover" fetchpriority="high" loading="lazy" />
                           <div>
                             <p className="text-sm font-bold truncate w-28 text-[#2D241E] dark:text-white">{item.name}</p>
@@ -2771,6 +2843,16 @@ useEffect(() => {
     setQuickViewItem(null);
     if (quickViewSource === 'cart') setIsCartOpen(true);
     if (quickViewSource === 'checkout') setIsCheckoutOpen(true);
+    if (quickViewSource === 'order-again') {
+      requestAnimationFrame(() => {
+        document.getElementById('order-again')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    if (quickViewSource === 'recently-viewed') {
+      requestAnimationFrame(() => {
+        document.getElementById('recently-viewed')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
     setQuickViewSource(null);
   };
 
@@ -2984,7 +3066,7 @@ const handlePlaceOrder = (discountAmount) => {
           updateQuantity={updateQuantity} 
           toggleFavorite={toggleFavorite}
           favorites={favorites}
-          onQuickView={(item) => handleQuickView(item, 'menu')}
+          onQuickView={handleQuickView}
           onRemoveRecentlyViewed={(id) => setRecentlyViewed(prev => prev.filter(viewedId => viewedId !== id))}
           recentlyViewed={recentlyViewed}
           recentlyOrdered={recentlyOrdered}
