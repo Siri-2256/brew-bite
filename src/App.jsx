@@ -287,12 +287,15 @@ const randomCouponAmount = (usedAmounts = new Set()) => {
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
-const generateRewardCoupons = (count) => {
+const generateRewardCoupons = (count, existingCoupons = []) => {
   const seenCodes = new Set();
-  const usedAmounts = new Set();
+  const usedAmounts = new Set((existingCoupons || []).map((coupon) => Number(coupon.amount)).filter((amount) => Number.isFinite(amount)));
   const coupons = [];
 
-  while (coupons.length < count) {
+  const maxPossible = COUPON_AMOUNT_POOL.length - usedAmounts.size;
+  const targetCount = Math.max(0, Math.min(count, maxPossible));
+
+  while (coupons.length < targetCount) {
     const amount = randomCouponAmount(usedAmounts);
     if (COUPON_AMOUNT_POOL.includes(amount)) usedAmounts.add(amount);
     const code = `BB${amount}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
@@ -2816,8 +2819,9 @@ const handlePlaceOrder = (discountAmount) => {
     
     const rewardsCount = Math.floor(finalTotal / 500);
     if (rewardsCount > 0) {
-      setScratchQueue(generateRewardCoupons(rewardsCount));
-      setShowScratchCard(true);
+      const generatedCoupons = generateRewardCoupons(rewardsCount, earnedCoupons);
+      setScratchQueue(generatedCoupons);
+      if (generatedCoupons.length > 0) setShowScratchCard(true);
     }
 
     const cartItemIds = cart.map(c => c.id);
