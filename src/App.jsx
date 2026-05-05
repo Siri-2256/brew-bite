@@ -274,30 +274,21 @@ const THEME = {
 const formatPrice = (price) => `₹${(price || 0).toLocaleString('en-IN')}`;
 
 const COUPON_MIN_AMOUNT = 20;
-const COUPON_MAX_AMOUNT = 250;
+const COUPON_MAX_AMOUNT = 100;
 const COUPON_STEP = 10;
 const COUPON_AMOUNT_POOL = Array.from(
   { length: Math.floor((COUPON_MAX_AMOUNT - COUPON_MIN_AMOUNT) / COUPON_STEP) + 1 },
   (_, idx) => COUPON_MIN_AMOUNT + idx * COUPON_STEP,
 );
 
-const randomCouponAmount = (usedAmounts = new Set()) => {
-  const available = COUPON_AMOUNT_POOL.filter((amount) => !usedAmounts.has(amount));
-  const pool = available.length ? available : COUPON_AMOUNT_POOL;
-  return pool[Math.floor(Math.random() * pool.length)];
-};
+const randomCouponAmount = () => COUPON_AMOUNT_POOL[Math.floor(Math.random() * COUPON_AMOUNT_POOL.length)];
 
-const generateRewardCoupons = (count, existingCoupons = []) => {
+const generateRewardCoupons = (count) => {
   const seenCodes = new Set();
-  const usedAmounts = new Set((existingCoupons || []).map((coupon) => Number(coupon.amount)).filter((amount) => Number.isFinite(amount)));
   const coupons = [];
 
-  const maxPossible = COUPON_AMOUNT_POOL.length - usedAmounts.size;
-  const targetCount = Math.max(0, Math.min(count, maxPossible));
-
-  while (coupons.length < targetCount) {
-    const amount = randomCouponAmount(usedAmounts);
-    if (COUPON_AMOUNT_POOL.includes(amount)) usedAmounts.add(amount);
+  while (coupons.length < count) {
+    const amount = randomCouponAmount();
     const code = `BB${amount}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     if (seenCodes.has(code)) continue;
     seenCodes.add(code);
@@ -2901,7 +2892,7 @@ const handlePlaceOrder = (discountAmount) => {
     
     const rewardsCount = Math.floor(finalTotal / 500);
     if (rewardsCount > 0) {
-      const generatedCoupons = generateRewardCoupons(rewardsCount, earnedCoupons);
+      const generatedCoupons = generateRewardCoupons(rewardsCount);
       setScratchQueue(generatedCoupons);
       if (generatedCoupons.length > 0) setShowScratchCard(true);
     }
