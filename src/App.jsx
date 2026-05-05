@@ -2675,6 +2675,12 @@ export default function App() {
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
 
   useEffect(() => {
+    if (scratchQueue.length > 0 && !isCheckoutOpen) {
+      setShowScratchCard(true);
+    }
+  }, [scratchQueue, isCheckoutOpen]);
+
+  useEffect(() => {
     localStorage.setItem('brewbite_coupons', JSON.stringify(earnedCoupons));
   }, [earnedCoupons]);
 
@@ -2894,7 +2900,6 @@ const handlePlaceOrder = (discountAmount) => {
     if (rewardsCount > 0) {
       const generatedCoupons = generateRewardCoupons(rewardsCount);
       setScratchQueue(generatedCoupons);
-      if (generatedCoupons.length > 0) setShowScratchCard(true);
     }
 
     const cartItemIds = cart.map(c => c.id);
