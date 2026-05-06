@@ -1235,12 +1235,12 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 w-full pt-2">
+            <div className="flex w-full gap-2 overflow-x-auto pb-2 pt-2 hide-scrollbar sm:grid sm:grid-cols-3 lg:grid-cols-7 sm:overflow-visible sm:pb-0">
               {CATEGORIES.map(category => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`w-full px-4 py-2.5 min-h-[48px] rounded-full text-sm font-semibold transition-all duration-300 ${
+                  className={`shrink-0 sm:w-full px-3 sm:px-4 py-2.5 min-h-[44px] sm:min-h-[48px] rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
                     activeCategory === category 
                       ? `${THEME.primary} shadow-md` 
                       : `${THEME.cardBg} border ${THEME.border} hover:border-[#6F4E37] active:scale-95 text-[#2D241E] dark:text-white`
