@@ -937,10 +937,10 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
   };
 
   return (
-    <div className={`group flex flex-col justify-between ${THEME.cardBg} rounded-2xl p-4 border ${THEME.border} shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in relative w-full`}>
+    <div className={`group flex flex-row sm:flex-col justify-between ${THEME.cardBg} rounded-2xl p-4 border ${THEME.border} shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in relative w-full`}>
       
       <div>
-        <div className="relative aspect-[4/5] sm:aspect-square w-full rounded-xl overflow-hidden mb-4 bg-black/5 dark:bg-white/5 cursor-pointer" onClick={() => onQuickView(item)}>
+        <div className="relative w-2/5 sm:w-full aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden mb-0 sm:mb-4 bg-black/5 dark:bg-white/5 cursor-pointer" onClick={() => onQuickView(item)}>
           <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" fetchpriority="high" loading="lazy" />
           
           <button onClick={handleFavToggle} className="absolute top-3 right-3 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-full shadow-md transition-transform hover:scale-110 z-10 min-h-[40px] min-w-[40px] flex items-center justify-center">
@@ -954,7 +954,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
           )}
         </div>
 
-        <div className="px-1 mb-3">
+        <div className="px-1 mb-3 w-3/5 sm:w-full pl-3 sm:pl-0">
           <div className="flex items-center justify-between mb-1">
             <p className={`text-xs font-semibold uppercase tracking-wider ${THEME.primaryText}`}>{item.category}</p>
             <div className="flex items-center gap-2">
@@ -970,7 +970,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
         </div>
       </div>
       
-      <div className="flex flex-col gap-3 px-1 mt-auto">
+      <div className="flex flex-col gap-3 px-1 mt-auto w-3/5 sm:w-full">
         {hasVariants && (
           <div className="grid grid-cols-3 gap-1.5 w-full">
             {item.variants.map(v => (
@@ -1986,7 +1986,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#FAF7F2] dark:bg-[#12100E] p-4 sm:p-6 animate-fade-in">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col`}>
         <div className="flex justify-between items-center mb-4 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-20 py-4">
-          <h2 className="text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Heart size={32} className="text-red-500 fill-red-500"/> Your Favorites</h2>
+          <h2 className="text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Heart size={32} className="text-red-500 fill-red-500"/> My Favorites</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={onViewCart}
@@ -1998,6 +1998,12 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                <X size={24} className="text-[#2D241E] dark:text-white" />
             </button>
           </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-black/5 dark:border-white/5 flex justify-center">
+          <button onClick={() => { onClose(); setTimeout(() => { document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 180); }} className="px-6 py-3 rounded-full bg-[#6F4E37] text-white font-bold hover:bg-[#5A3E2B] transition-colors">
+            Add more Items
+          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto hide-scrollbar pr-1">
@@ -2839,6 +2845,7 @@ useEffect(() => {
   const handleCloseQuickView = () => {
     setQuickViewItem(null);
     if (quickViewSource === 'cart') setIsCartOpen(true);
+    if (quickViewSource === 'favorites') setIsFavOpen(true);
     if (quickViewSource === 'checkout') setIsCheckoutOpen(true);
     if (quickViewSource === 'order-again') {
       requestAnimationFrame(() => {
