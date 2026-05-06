@@ -1988,12 +1988,12 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#FAF7F2] dark:bg-[#12100E] p-4 sm:p-6 animate-fade-in">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col`}>
-        <div className="flex justify-between items-center mb-4 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-20 py-4">
-          <h2 className="text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-3"><Heart size={32} className="text-red-500 fill-red-500"/> My Favorites</h2>
+        <div className="flex justify-between items-center gap-3 mb-4 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-20 py-4">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-2 sm:gap-3"><Heart size={28} className="text-red-500 fill-red-500"/> My Favorites</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={onViewCart}
-              className="px-4 py-2 min-h-[44px] rounded-full bg-[#6F4E37] text-white font-bold text-sm hover:bg-[#5A3E2B] transition-colors"
+              className="px-3 sm:px-4 py-2 min-h-[44px] rounded-full bg-[#6F4E37] text-white font-bold text-xs sm:text-sm hover:bg-[#5A3E2B] transition-colors"
             >
               View Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})
             </button>
