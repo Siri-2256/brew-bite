@@ -5,7 +5,7 @@ import {
   ArrowUpDown, CheckCircle2, Loader2, Heart, Clock, 
   Tag, Flame, Package, Truck, Utensils, MessageSquare, SlidersHorizontal, 
   ArrowRight, Bell, Lock, MapPin, History, RefreshCcw,
-  CreditCard, Trophy
+  CreditCard, Trophy, ChevronDown
 } from 'lucide-react';
 
 // ==========================================
@@ -814,7 +814,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto hide-scrollbar relative pb-48 md:pb-48 scroll-smooth overscroll-contain" style={{ maxHeight: 'calc(95vh - 120px)' }}>
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto hide-scrollbar relative pb-56 md:pb-56 scroll-smooth overscroll-contain" style={{ maxHeight: 'calc(95vh - 120px)' }}>
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -1066,7 +1066,7 @@ const FiltersModal = ({ isOpen, onClose, activeFilters, setActiveFilters }) => {
 
           <div className="flex justify-between items-center pt-4 border-t border-black/10 dark:border-white/10">
             <button onClick={() => { setActiveFilters({ ratings: [], prices: [], sort: 'default' }); }} className="px-4 py-2 rounded-xl border">Clear</button>
-            <button onClick={onClose} disabled={!hasSelection} className={`px-4 py-2 rounded-xl transition-all ${hasSelection ? THEME.primary : 'bg-black/10 dark:bg-white/10 text-black/40 dark:text-white/30 cursor-not-allowed'}`}>Apply</button>
+            <button onClick={onClose} disabled={!hasSelection} className={`px-4 py-2 rounded-xl transition-all ${hasSelection ? 'bg-[#6F4E37] text-white font-bold hover:bg-[#5A3E2B]' : 'bg-black/10 dark:bg-white/10 text-black/40 dark:text-white/30 cursor-not-allowed'}`}>Show Results</button>
           </div>
         </div>
       </div>
@@ -1255,12 +1255,11 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
 
         <ComboBuilder addToCart={addToCart} />
 
-        <div className={`sticky top-[72px] md:top-[84px] z-40 pb-4 pt-4 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '1rem 100vw' }}>
-          <div className="flex flex-col gap-4 reveal-on-scroll max-w-[1600px] mx-auto w-full" style={{ transitionDelay: '0.1s' }}>
-            
-            <div className="flex items-center gap-2 lg:gap-3 flex-nowrap overflow-x-auto hide-scrollbar pb-1">
+        <div className={`sticky top-0 z-50 pb-3 pt-3 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '0.75rem 100vw' }}>
+          <div className="max-w-[1600px] mx-auto w-full px-4 md:px-8">
+            <div className="flex items-center gap-2 lg:gap-3 flex-nowrap">
               
-              <div ref={searchRef} className="relative flex-1 min-w-0 lg:max-w-[54%]">
+              <div ref={searchRef} className="relative flex-1 min-w-0">
                 <div className={`flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 focus-within:border-[#6F4E37] transition-colors shadow-sm`}>
                   <Search size={18} className={THEME.muted} />
                   <input 
@@ -1285,7 +1284,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                 </div>
 
                 {showSuggestions && searchSuggestions.length > 0 && (
-                  <div className={`absolute top-full left-0 right-0 mt-2 p-2 rounded-2xl shadow-xl ${THEME.cardBg} border ${THEME.border} z-40 animate-slide-down max-h-64 overflow-y-auto hide-scrollbar`}>
+                  <div className={`absolute top-full left-0 right-0 mt-2 p-2 rounded-2xl shadow-xl bg-[#FAF7F2] dark:bg-[#12100E] border border-black/10 dark:border-white/10 z-50 animate-slide-down max-h-64 overflow-y-auto hide-scrollbar`}>
                     {searchSuggestions.map(item => (
                       <div 
                         key={item.id}
@@ -1295,20 +1294,15 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                           if (activeCategory !== 'All' && activeCategory !== item.category) setActiveCategory('All');
                           if (dietFilter !== 'All' && dietFilter !== item.type) setDietFilter('All');
                         }}
-                        className={`flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 transition-colors group`}
+                        className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all group min-h-[48px] hover:bg-[#6F4E37] dark:hover:bg-[#6F4E37]`}
                       >
-                        <span className="font-semibold text-sm group-hover:text-[#6F4E37] transition-colors text-[#2D241E] dark:text-white">{item.name}</span>
-                        <span className={`text-xs px-2 py-1 rounded-md bg-black/5 dark:bg-white/5 ${THEME.muted}`}>{item.category}</span>
+                        <span className="font-semibold text-sm text-[#2D241E] dark:text-white group-hover:text-white">{item.name}</span>
+                        <span className={`text-xs px-2 py-1 rounded-md bg-black/5 dark:bg-white/5 text-[#8A7B72] dark:text-[#A89F95] group-hover:text-white`}>{item.category}</span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-              <button onClick={onOpenFilters} className={`relative flex items-center justify-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 transition-colors shadow-sm shrink-0 min-h-[40px] min-w-[40px] hover:border-[#6F4E37]`} aria-label="Open filters">
-                  <SlidersHorizontal size={16} className={THEME.muted} />
-                </button>
 
               <button
                 onClick={() => setDietFilter(prev => (prev === 'Veg' ? 'All' : 'Veg'))}
@@ -1318,20 +1312,33 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                 <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${dietFilter === 'Veg' ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
                   <div className={`w-3 h-3 rounded-full bg-white transition-transform ${dietFilter === 'Veg' ? 'translate-x-4' : 'translate-x-0'}`} />
                 </div>
-                <span>{dietFilter === 'Veg' ? 'Veg Mode' : 'All Items'}</span>
+                <span className="hidden sm:inline">{dietFilter === 'Veg' ? 'Veg Mode' : 'All Items'}</span>
               </button>
-              </div>
-              </div>
             </div>
+          </div>
+        </div>
 
-            <div className="w-full gap-2 overflow-x-auto pb-1 pt-0.5 hide-scrollbar whitespace-nowrap flex">
+        <div className={`sticky top-[64px] md:top-[80px] z-40 pb-3 pt-3 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '0.75rem 100vw' }}>
+          <div className="max-w-[1600px] mx-auto w-full px-4 md:px-8 flex items-center gap-2">
+            <button onClick={onOpenFilters} className={`relative flex items-center justify-center gap-1 px-4 py-2 rounded-full border transition-all shrink-0 min-h-[40px] hover:border-[#6F4E37] ${activeFilters.ratings.length > 0 || activeFilters.prices.length > 0 ? 'bg-[#6F4E37] border-[#6F4E37] text-white' : `${THEME.cardBg} ${THEME.border}`}`} aria-label="Open filters">
+              <SlidersHorizontal size={16} />
+              <span className="text-xs font-bold">Filters</span>
+              {(activeFilters.ratings.length > 0 || activeFilters.prices.length > 0) && (
+                <>
+                  <span className="text-xs font-bold ml-1">({activeFilters.ratings.length + activeFilters.prices.length})</span>
+                  <ChevronDown size={14} className="ml-1" />
+                </>
+              )}
+            </button>
+
+            <div className="flex-1 gap-1.5 overflow-x-auto pb-1 pt-0.5 hide-scrollbar whitespace-nowrap flex">
               {CATEGORIES.map(category => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={`shrink-0 px-3 md:px-3.5 py-2 min-h-[36px] md:min-h-[40px] rounded-full text-xs md:text-[13px] font-semibold whitespace-nowrap transition-all duration-300 ${
                     activeCategory === category 
-                      ? `${THEME.primary} shadow-md` 
+                      ? `bg-[#6F4E37] text-white shadow-md` 
                       : `${THEME.cardBg} border ${THEME.border} hover:border-[#6F4E37] active:scale-95 text-[#2D241E] dark:text-white`
                   }`}
                 >
@@ -1339,7 +1346,6 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                 </button>
               ))}
             </div>
-
           </div>
         </div>
 
@@ -1389,7 +1395,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                             </button>
                           </div>
                         ) : (
-                          <button onClick={() => onQuickView(item, 'order-again')} className="mt-auto w-full py-3 min-h-[48px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] group-hover:bg-[#6F4E37] group-hover:text-white transition-colors">
+                          <button onClick={() => onQuickView(item, 'order-again')} className="mt-auto w-full py-3 min-h-[48px] rounded-lg text-sm font-bold bg-[#6F4E37] text-white hover:bg-[#5A3E2B] transition-colors">
                             Add+
                           </button>
                         )}
@@ -1491,7 +1497,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                               e.stopPropagation();
                               onQuickView(item, 'recently-viewed');
                             }}
-                            className="mt-auto w-full py-2.5 min-h-[44px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37] hover:text-white transition-colors"
+                            className="mt-auto w-full py-2.5 min-h-[44px] rounded-lg text-sm font-bold bg-[#6F4E37] text-white hover:bg-[#5A3E2B] transition-colors"
                           >
                             Add+
                           </button>
@@ -1535,6 +1541,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
             </button>
           </div>
         )}
+      </div>
     </section>
   );
 };
@@ -2281,7 +2288,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                   ) : (
                     <button
                       onClick={() => handleViewItem(item)}
-                      className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] hover:bg-[#6F4E37] dark:hover:bg-[#D4B895] hover:text-white dark:hover:text-[#12100E] transition-colors flex items-center justify-center"
+                      className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold bg-[#6F4E37] text-white hover:bg-[#5A3E2B] transition-colors flex items-center justify-center"
                     >
                       Add+
                     </button>
