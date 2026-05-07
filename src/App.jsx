@@ -808,7 +808,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start md:overflow-y-auto md:max-h-[95vh] hide-scrollbar relative">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start md:overflow-y-auto md:max-h-[95vh] hide-scrollbar relative md:pb-28">
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -1321,7 +1321,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`shrink-0 sm:w-full px-3 sm:px-4 py-2.5 min-h-[44px] sm:min-h-[48px] rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
+                  className={`shrink-0 px-3 md:px-4 py-2 min-h-[36px] md:min-h-[44px] rounded-full text-xs md:text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
                     activeCategory === category 
                       ? `${THEME.primary} shadow-md` 
                       : `${THEME.cardBg} border ${THEME.border} hover:border-[#6F4E37] active:scale-95 text-[#2D241E] dark:text-white`
@@ -1536,7 +1536,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
 // 5. CHECKOUT, ORDER TRACKING, HISTORY, & ADMIN
 // ==========================================
 
-const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, availableCoupons, onRedeemCoupon, orderMode, tableNumber, onConfirm, addToCart, onQuickView }) => {
+const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax, appliedDiscount, availableCoupons, onRedeemCoupon, orderMode, tableNumber, onConfirm, addToCart, onQuickView, setPendingCouponCode }) => {
   const [couponCode, setCouponCode] = useState('');
   const [localDiscount, setLocalDiscount] = useState(0);
   const [showCoupons, setShowCoupons] = useState(false);
@@ -1563,7 +1563,7 @@ const CheckoutModal = ({ isOpen, onClose, onBackToCart, cart, cartTotal, cartTax
       return;
     }
     setLocalDiscount(matched.amount);
-    onRedeemCoupon(matched.code);
+    if (typeof setPendingCouponCode === 'function') setPendingCouponCode(matched.code);
   };
 
   const checkoutRecommendations = useMemo(() => {
@@ -2493,6 +2493,7 @@ const FloatingCartBar = ({ cartCount, cartTotal, onOpenCart }) => {
 const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal, onProceedToCheckout, addToCart, availableCoupons, onRedeemCoupon, onQuickView }) => {
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [appliedCouponCode, setAppliedCouponCode] = useState('');
   const [showCoupons, setShowCoupons] = useState(false);
 
   useEffect(() => {
@@ -2509,7 +2510,7 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
       return;
     }
     setAppliedDiscount(matched.amount);
-    onRedeemCoupon(matched.code);
+    setAppliedCouponCode(matched.code);
   };
 
   const finalTotal = Math.max(0, (cartTotal || 0) - (appliedDiscount || 0)) + (cartTax || 0);
@@ -2721,7 +2722,7 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
 
         {cart.length > 0 && (
           <div className={`p-6 border-t ${THEME.border} bg-black/[0.02] dark:bg-white/[0.02]`}>
-            <button onClick={() => { setIsCartOpen(false); onProceedToCheckout(appliedDiscount); }} className={`w-full py-4 min-h-[56px] rounded-full font-bold text-xl flex items-center justify-center gap-3 transition-transform shadow-[0_10px_20px_rgba(111,78,55,0.3)] ${THEME.primary} hover:scale-[1.05] active:scale-95`}>
+              <button onClick={() => { setIsCartOpen(false); onProceedToCheckout(appliedDiscount, appliedCouponCode); }} className={`w-full py-4 min-h-[56px] rounded-full font-bold text-xl flex items-center justify-center gap-3 transition-transform shadow-[0_10px_20px_rgba(111,78,55,0.3)] ${THEME.primary} hover:scale-[1.05] active:scale-95`}>
               Place Order <ArrowRight size={20} strokeWidth={3} />
             </button>
           </div>
@@ -2847,6 +2848,7 @@ export default function App() {
   });
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [pendingDiscount, setPendingDiscount] = useState(0);
+  const [pendingCouponCode, setPendingCouponCode] = useState(null);
 
   const [isFavOpen, setIsFavOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -2931,39 +2933,13 @@ export default function App() {
     else document.documentElement.classList.remove('dark');
   }, [isDarkMode]);
 
-  useEffect(() => {
-    if (!quickViewItem) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [quickViewItem]);
-
   // Centralized overflow lock: prevent background scrolling when overlays are open
   useEffect(() => {
     const anyOpen = !!(quickViewItem || isMobileMenuOpen || isFavOpen || isHistoryOpen || isCartOpen || isCheckoutOpen || isAdminPanelOpen || isFiltersOpen || isBillModalOpen || isStatusOpen);
-    const prev = document.body.style.overflow;
     if (anyOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = prev;
-    return () => { document.body.style.overflow = prev; };
+    else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; };
   }, [quickViewItem, isMobileMenuOpen, isFavOpen, isHistoryOpen, isCartOpen, isCheckoutOpen, isAdminPanelOpen, isFiltersOpen, isBillModalOpen, isStatusOpen]);
-
-  useEffect(() => {
-    if (!isMobileMenuOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isMobileMenuOpen]);
-
-  useEffect(() => {
-    if (!isFavOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [isFavOpen]);
 
   useEffect(() => { localStorage.setItem('brewbite_favs', JSON.stringify(favorites)); }, [favorites]);
   useEffect(() => { localStorage.setItem('brewbite_recent', JSON.stringify(recentlyViewed)); }, [recentlyViewed]);
@@ -3192,6 +3168,10 @@ const handlePlaceOrder = (discountAmount) => {
     setUnreadNotif(prev => prev + 1);
     setIsStatusOpen(true);
     setCart([]); 
+    if (pendingCouponCode) {
+      handleRedeemCoupon(pendingCouponCode);
+      setPendingCouponCode(null);
+    }
     setPendingDiscount(0);
   };
 
@@ -3357,23 +3337,47 @@ const handlePlaceOrder = (discountAmount) => {
           source={quickViewSource}
         />
 
-        <CartDrawer 
-          cart={cart} 
-          cartTax={cartTax}
-          isCartOpen={isCartOpen} 
-          setIsCartOpen={setIsCartOpen} 
-          updateQuantity={updateQuantity} 
-          removeFromCart={removeFromCart} 
+        <CheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          onBackToCart={() => {
+            setIsCheckoutOpen(false);
+            setIsCartOpen(true);
+          }}
+          cart={cart}
           cartTotal={cartTotal}
-          onProceedToCheckout={(discount) => { setPendingDiscount(discount); setIsCheckoutOpen(true); }}
-          addToCart={addToCart}
+          cartTax={cartTax}
+          appliedDiscount={pendingDiscount}
           availableCoupons={earnedCoupons}
           onRedeemCoupon={handleRedeemCoupon}
+          orderMode={orderMode}
+          tableNumber={tableNumber}
+          addToCart={addToCart}
           onQuickView={(item) => {
-            setIsCartOpen(false);
-            handleQuickView(item, 'cart');
+            setIsCheckoutOpen(false);
+            handleQuickView(item, 'checkout');
           }}
+          onConfirm={(finalDiscount) => handlePlaceOrder(finalDiscount)}
+          setPendingCouponCode={setPendingCouponCode}
         />
+
+              <CartDrawer 
+                cart={cart} 
+                cartTax={cartTax}
+                isCartOpen={isCartOpen} 
+                setIsCartOpen={setIsCartOpen} 
+                updateQuantity={updateQuantity} 
+                removeFromCart={removeFromCart} 
+                cartTotal={cartTotal}
+                onProceedToCheckout={(discount, couponCode) => { setPendingDiscount(discount); setPendingCouponCode(couponCode || null); setIsCheckoutOpen(true); }}
+                addToCart={addToCart}
+                availableCoupons={earnedCoupons}
+                onRedeemCoupon={handleRedeemCoupon}
+                onQuickView={(item) => {
+                  setIsCartOpen(false);
+                  handleQuickView(item, 'cart');
+                }}
+              />
 <CheckoutModal
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
