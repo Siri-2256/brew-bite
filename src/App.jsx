@@ -750,7 +750,7 @@ const ComboBuilder = ({ addToCart }) => {
   );
 };
 
-const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favorites }) => {
+const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favorites, source }) => {
   if (!isOpen || !item) return null;
 
   const hasVariants = item.variants && item.variants.length > 0;
@@ -780,6 +780,8 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
     onClose();
   };
 
+  const actionLabel = source === 'cart' ? 'Save & Add+' : 'Add+';
+
   const handleFav = (e) => {
     e.stopPropagation();
     toggleFavorite(item.id);
@@ -790,15 +792,15 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative w-full max-w-5xl max-h-[95vh] overflow-y-auto md:overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down`}>
         
-        <button onClick={handleFav} className="absolute top-4 right-16 z-30 p-2 bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-black transition-colors shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
+        <button onClick={handleFav} className="absolute top-4 right-20 z-30 p-2 bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-black transition-colors shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
           <Heart size={20} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
         </button>
         <button onClick={onClose} className="absolute top-4 right-4 z-30 p-2 bg-[#F3ECE7] dark:bg-[#2E2A28] rounded-full hover:bg-opacity-95 transition-colors text-[#2D241E] dark:text-white shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
           <X size={20} />
         </button>
 
-        <div className="w-full md:w-1/2 md:max-h-[95vh] md:overflow-hidden relative bg-black/5 dark:bg-white/5">
-          <img src={item.image} alt={item.name} className="w-full h-auto md:h-full md:sticky md:top-0 object-cover" fetchpriority="high" loading="eager" />
+        <div className="w-full md:w-1/2 md:max-h-[95vh] md:overflow-hidden relative bg-black/5 dark:bg-white/5 flex items-start justify-center p-4 md:p-0">
+          <img src={item.image} alt={item.name} className="w-[132px] h-[132px] sm:w-[160px] sm:h-[160px] md:w-full md:h-full object-cover rounded-2xl md:rounded-none md:sticky md:top-0" fetchpriority="high" loading="eager" />
           {item.isPopular && (
             <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 flex items-center gap-1">
               <Flame size={14} /> Popular
@@ -895,7 +897,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           <div className="sticky bottom-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-white dark:bg-[#1C1917] flex items-center justify-between gap-6 z-30 backdrop-blur-sm">
             <span className="text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
             <button onClick={handleAdd} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-xl hover:scale-105 active:scale-95 ${THEME.primary}`}>
-              Add+
+              {actionLabel}
             </button>
           </div>
         </div>
@@ -941,7 +943,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
       <div className="relative w-2/5 sm:w-full shrink-0 aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-white/5">
         <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" fetchpriority="high" loading="lazy" />
 
-        <button onClick={(e) => { e.stopPropagation(); handleFavToggle(e); }} className="absolute top-2 right-2 p-2 bg-white/85 dark:bg-black/55 backdrop-blur-sm rounded-full shadow-md transition-transform hover:scale-110 z-10 min-h-[40px] min-w-[40px] flex items-center justify-center">
+        <button onClick={(e) => { e.stopPropagation(); handleFavToggle(e); }} className="hidden sm:flex absolute top-2 right-2 p-2 bg-white/85 dark:bg-black/55 backdrop-blur-sm rounded-full shadow-md transition-transform hover:scale-110 z-10 min-h-[40px] min-w-[40px] items-center justify-center">
           <Heart size={16} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
         </button>
 
@@ -955,10 +957,13 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
       <div className="w-3/5 sm:w-full min-w-0 flex flex-col justify-between gap-3">
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-wider ${THEME.primaryText} truncate`}>{item.category}</p>
-              <h3 className="text-base sm:text-xl md:text-2xl font-bold leading-tight text-[#2D241E] dark:text-[#EAE6DF] line-clamp-2">{item.name}</h3>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight text-[#2D241E] dark:text-[#EAE6DF] line-clamp-2">{item.name}</h3>
             </div>
+            <button onClick={(e) => { e.stopPropagation(); handleFavToggle(e); }} className="sm:hidden p-2 bg-white/90 dark:bg-black/55 rounded-full shadow-md transition-transform hover:scale-110 min-h-[40px] min-w-[40px] flex items-center justify-center shrink-0">
+              <Heart size={16} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
+            </button>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
@@ -1908,6 +1913,15 @@ const OrderStatusScreen = ({ activeOrders, onClose, orderReviews = {}, onSubmitR
   );
 };
 const OrderHistoryModal = ({ isOpen, onClose, history, onReorder }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#FAF7F2] dark:bg-[#12100E] p-4 sm:p-6 animate-fade-in">
@@ -2055,18 +2069,18 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                 <ChevronLeft size={20} /> Back to Favorites
               </button>
               <div className="relative">
-                <button onClick={handleFavToggle} className="absolute top-2 -right-14 z-40 p-2 bg-white/90 dark:bg-black/80 rounded-full shadow-sm flex items-center justify-center min-h-[48px] min-w-[48px] hover:bg-white transition-colors" title="Toggle favorite">
+                <button onClick={handleFavToggle} className="absolute top-2 -right-20 z-40 p-2 bg-white/90 dark:bg-black/80 rounded-full shadow-sm flex items-center justify-center min-h-[48px] min-w-[48px] hover:bg-white transition-colors" title="Toggle favorite">
                   <Heart size={24} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
                 </button>
-                <button onClick={handleCloseItem} className="absolute top-2 right-2 z-40 p-2 bg-[#F3ECE7] dark:bg-[#2E2A28] rounded-full shadow-sm flex items-center justify-center min-h-[48px] min-w-[48px] hover:bg-opacity-95 transition-colors" title="Close item view">
+                <button onClick={handleCloseItem} className="absolute top-2 right-4 z-40 p-2 bg-[#F3ECE7] dark:bg-[#2E2A28] rounded-full shadow-sm flex items-center justify-center min-h-[48px] min-w-[48px] hover:bg-opacity-95 transition-colors" title="Close item view">
                   <X size={24} className="text-[#2D241E] dark:text-white" />
                 </button>
               </div>
             </div>
 
             <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar py-6 pr-1 space-y-6">
-              <div className="flex gap-4 mb-2">
-                <img src={viewingItem.image} alt={viewingItem.name} className="w-32 h-32 sm:w-40 sm:h-40 rounded-xl object-cover" fetchpriority="high" loading="lazy" />
+              <div className="flex gap-4 mb-2 items-start">
+                <img src={viewingItem.image} alt={viewingItem.name} className="w-[132px] h-[132px] sm:w-40 sm:h-40 rounded-xl object-cover shrink-0" fetchpriority="high" loading="lazy" />
                 <div className="flex-1">
                   <h3 className="text-2xl sm:text-3xl font-bold text-[#2D241E] dark:text-white mb-2">{viewingItem.name}</h3>
                   <div className="flex items-center gap-3 mb-3">
@@ -2081,6 +2095,17 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
               </div>
 
               <p className={`text-sm sm:text-base leading-relaxed ${THEME.muted}`}>{viewingItem.description}</p>
+
+              {viewingItem.ingredients && viewingItem.ingredients.length > 0 && (
+                <div>
+                  <h4 className="font-bold text-sm text-[#2D241E] dark:text-white mb-2">Ingredients</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {viewingItem.ingredients.map(ing => (
+                      <span key={ing} className="px-2 py-1 bg-black/5 dark:bg-white/5 rounded-md text-[10px] font-semibold text-[#8A7B72] dark:text-[#A89F95]">{ing}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {viewingItem.variants && viewingItem.variants.length > 0 && (
                 <div>
@@ -2237,6 +2262,15 @@ const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
 }
 
 const AdminPanel = ({ orders, onAcceptOrder, onRejectOrder, isOpen, onClose }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const pendingCount = orders.filter((order) => order.status === 'Pending').length;
@@ -2489,6 +2523,13 @@ const CartDrawer = ({ cart, cartTax, isCartOpen, setIsCartOpen, updateQuantity, 
                   ))}
                   {item.prepOption && <p className={`text-[9px] text-[#6F4E37] dark:text-[#D4B895] leading-tight truncate`}>Style: {item.prepOption}</p>}
                   <p className={`text-xs ${THEME.muted} mb-2 mt-1`}>{formatPrice(item.price)} each</p>
+
+                  <button
+                    onClick={() => onQuickView(item)}
+                    className="mb-2 px-3 py-1.5 min-h-[40px] rounded-full border border-[#6F4E37]/30 text-[#6F4E37] dark:text-[#D4B895] text-xs font-bold hover:bg-[#6F4E37]/10 transition-colors"
+                  >
+                    Edit preferences
+                  </button>
                   
                   <div className="flex items-center gap-1">
                     <button onClick={() => updateQuantity(item.uniqueId, -1)} className={`p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md border ${THEME.border} hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all text-[#2D241E] dark:text-white`}><Minus size={14} /></button>
@@ -3225,6 +3266,7 @@ const handlePlaceOrder = (discountAmount) => {
           addToCart={addToCart} 
           favorites={favorites}
           toggleFavorite={toggleFavorite}
+          source={quickViewSource}
         />
 
         <CartDrawer 
