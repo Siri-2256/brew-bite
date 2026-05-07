@@ -1260,10 +1260,10 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
         <div className={`sticky top-[80px] md:top-[90px] z-30 pb-4 pt-4 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '1rem 100vw' }}>
           <div className="flex flex-col gap-4 reveal-on-scroll max-w-[1600px] mx-auto w-full" style={{ transitionDelay: '0.1s' }}>
             
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 lg:gap-3 flex-nowrap overflow-x-auto hide-scrollbar pb-1">
               
-              <div ref={searchRef} className="relative w-full lg:w-[48%]">
-                <div className={`flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2.5 focus-within:border-[#6F4E37] transition-colors shadow-sm`}>
+              <div ref={searchRef} className="relative flex-1 min-w-0 lg:max-w-[54%]">
+                <div className={`flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 focus-within:border-[#6F4E37] transition-colors shadow-sm`}>
                   <Search size={18} className={THEME.muted} />
                   <input 
                     type="text" 
@@ -1307,24 +1307,26 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                 )}
               </div>
 
-              <div className="flex w-full lg:w-auto items-center gap-2 overflow-x-auto pb-1 lg:pb-0 hide-scrollbar">
-                <button onClick={onOpenFilters} className={`relative flex items-center justify-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 transition-colors shadow-sm shrink-0 min-h-[44px] min-w-[44px] hover:border-[#6F4E37]`} aria-label="Open filters">
+              <div className="flex items-center gap-2 shrink-0">
+              <button onClick={onOpenFilters} className={`relative flex items-center justify-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 transition-colors shadow-sm shrink-0 min-h-[40px] min-w-[40px] hover:border-[#6F4E37]`} aria-label="Open filters">
                   <SlidersHorizontal size={16} className={THEME.muted} />
                 </button>
 
-                <div className="flex items-center gap-1.5 bg-white dark:bg-[#1C1917] p-1 rounded-full border border-gray-200 dark:border-white/15 shadow-sm shrink-0">
-                  <button onClick={() => setDietFilter('All')} className={`px-3 py-1.5 min-h-[40px] rounded-full text-xs md:text-sm font-bold transition-all ${dietFilter === 'All' ? 'bg-[#6F4E37] text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>All</button>
-                  <button onClick={() => setDietFilter('Veg')} className={`flex items-center gap-1 px-3 py-1.5 min-h-[40px] rounded-full text-xs md:text-sm font-bold transition-all ${dietFilter === 'Veg' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
-                    <div className="flex items-center justify-center w-3 h-3 border border-green-600 rounded-sm"><div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div></div> Veg
-                  </button>
-                  <button onClick={() => setDietFilter('Non-Veg')} className={`flex items-center gap-1 px-3 py-1.5 min-h-[40px] rounded-full text-xs md:text-sm font-bold transition-all ${dietFilter === 'Non-Veg' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
-                    <div className="flex items-center justify-center w-3 h-3 border border-red-600 rounded-sm"><div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div></div> Non-Veg
-                  </button>
+              <button
+                onClick={() => setDietFilter(prev => (prev === 'Veg' ? 'All' : 'Veg'))}
+                className={`flex items-center gap-2 px-3 py-1.5 min-h-[40px] rounded-full text-xs md:text-sm font-bold transition-all shrink-0 border ${dietFilter === 'Veg' ? 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700' : 'bg-white dark:bg-[#1C1917] text-gray-600 border-gray-200 dark:border-white/15 hover:text-gray-900 dark:hover:text-white'}`}
+                aria-pressed={dietFilter === 'Veg'}
+              >
+                <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${dietFilter === 'Veg' ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                  <div className={`w-3 h-3 rounded-full bg-white transition-transform ${dietFilter === 'Veg' ? 'translate-x-4' : 'translate-x-0'}`} />
                 </div>
+                <span>{dietFilter === 'Veg' ? 'Veg On' : 'All Items'}</span>
+              </button>
+              </div>
               </div>
             </div>
 
-            <div className="w-full gap-1.5 overflow-x-auto pb-1.5 pt-1.5 hide-scrollbar whitespace-nowrap flex">
+            <div className="w-full gap-1.5 overflow-x-auto pb-1 pt-0.5 hide-scrollbar whitespace-nowrap flex">
               {CATEGORIES.map(category => (
                 <button
                   key={category}
@@ -1535,7 +1537,6 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
             </button>
           </div>
         )}
-      </div>
     </section>
   );
 };
