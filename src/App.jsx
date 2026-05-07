@@ -1318,7 +1318,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
           </div>
         </div>
 
-        <div className={`sticky top-[64px] md:top-[80px] z-40 pb-3 pt-3 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '0.75rem 100vw' }}>
+        <div className={`sticky top-[84px] md:top-[96px] z-40 pb-3 pt-3 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '0.75rem 100vw' }}>
           <div className="max-w-[1600px] mx-auto w-full px-4 md:px-8 flex items-center gap-2">
             <button onClick={onOpenFilters} className={`relative flex items-center justify-center gap-1 px-4 py-2 rounded-full border transition-all shrink-0 min-h-[40px] hover:border-[#6F4E37] ${activeFilters.ratings.length > 0 || activeFilters.prices.length > 0 ? 'bg-[#6F4E37] border-[#6F4E37] text-white' : `${THEME.cardBg} ${THEME.border}`}`} aria-label="Open filters">
               <SlidersHorizontal size={16} />
