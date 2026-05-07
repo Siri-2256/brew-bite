@@ -2156,7 +2156,8 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                   return cartQty > 0 ? (
                     <div className="w-full mt-auto flex items-center justify-between bg-[#6F4E37] text-white rounded-xl px-2 py-1.5 shadow-md min-h-[48px]">
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           const target = matchingCartItems[0];
                           if (target) updateQuantity(target.uniqueId, -1);
                         }}
@@ -2166,7 +2167,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                       </button>
                       <span className="text-base font-bold w-6 text-center">{cartQty}</span>
                       <button
-                        onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                        onClick={(e) => { e.stopPropagation(); addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || ''); }}
                         className="p-1.5 hover:bg-white/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                       >
                         <Plus size={16} strokeWidth={2.5}/>
