@@ -3,7 +3,7 @@ import {
   ShoppingBag, Menu, X, Search, Moon, Sun, 
   Coffee, ChevronRight, ChevronLeft, Plus, Minus, Trash2, Star, 
   ArrowUpDown, CheckCircle2, Loader2, Heart, Clock, 
-  Tag, Flame, Package, Truck, Utensils, MessageSquare, 
+  Tag, Flame, Package, Truck, Utensils, MessageSquare, SlidersHorizontal, 
   ArrowRight, Bell, Lock, MapPin, History, RefreshCcw,
   CreditCard, Trophy
 } from 'lucide-react';
@@ -776,7 +776,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
   const ratingInfo = getItemRating(item.id);
 
   const handleAdd = () => {
-    addToCart(item, selectedVariant, item.description, customs, instructions, selectedPrep);
+    addToCart(item, selectedVariant, item.description, customs, instructions, selectedPrep, source === 'cart' ? item.uniqueId : null);
     onClose();
   };
 
@@ -790,7 +790,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative w-full max-w-5xl max-h-[95vh] overflow-y-auto md:overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down`}>
+      <div className={`relative w-full max-w-5xl max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down`}>
         
         <button onClick={handleFav} className="absolute top-4 right-20 z-30 p-2 bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-black transition-colors shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
           <Heart size={20} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
@@ -808,7 +808,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start md:overflow-y-auto md:max-h-[95vh] hide-scrollbar relative md:pb-28">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto md:max-h-[95vh] hide-scrollbar relative md:pb-36 scroll-smooth overscroll-contain">
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -1015,6 +1015,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
 
 const FiltersModal = ({ isOpen, onClose, activeFilters, setActiveFilters }) => {
   if (!isOpen) return null;
+  const hasSelection = activeFilters.ratings.length > 0 || activeFilters.prices.length > 0;
   const toggleRating = (r) => {
     setActiveFilters(prev => {
       const exists = prev.ratings.includes(r);
@@ -1034,31 +1035,34 @@ const FiltersModal = ({ isOpen, onClose, activeFilters, setActiveFilters }) => {
         <div className="flex justify-center mb-4">
           <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full min-h-[48px] min-w-[48px] flex items-center justify-center"><X size={20}/></button>
         </div>
-        <h3 className="text-xl font-bold text-center mb-3">Filters</h3>
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <SlidersHorizontal size={18} className={THEME.muted} />
+          <h3 className="text-xl font-bold text-center">Filters</h3>
+        </div>
 
         <div className="space-y-4">
           <div>
             <h4 className="text-sm font-bold mb-2">Rating</h4>
-            <div className="flex gap-2">
-              <button onClick={() => toggleRating('4.0')} className={`px-3 py-2 rounded-full border ${activeFilters.ratings.includes('4.0') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above 4.0</button>
-              <button onClick={() => toggleRating('4.5')} className={`px-3 py-2 rounded-full border ${activeFilters.ratings.includes('4.5') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above 4.5</button>
+            <div className="flex gap-2 flex-wrap">
+              <button onClick={() => toggleRating('4.0')} className={`px-3 py-2 rounded-full border min-h-[40px] ${activeFilters.ratings.includes('4.0') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above 4.0</button>
+              <button onClick={() => toggleRating('4.5')} className={`px-3 py-2 rounded-full border min-h-[40px] ${activeFilters.ratings.includes('4.5') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above 4.5</button>
             </div>
           </div>
 
           <div>
             <h4 className="text-sm font-bold mb-2">Price</h4>
             <div className="flex gap-2 flex-wrap">
-              <button onClick={() => togglePrice('low-high')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('low-high') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Low → High</button>
-              <button onClick={() => togglePrice('high-low')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('high-low') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>High → Low</button>
-              <button onClick={() => togglePrice('under200')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('under200') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Under ₹200</button>
-              <button onClick={() => togglePrice('under300')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('under300') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Under ₹300</button>
-              <button onClick={() => togglePrice('above300')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('above300') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above ₹300</button>
+              <button onClick={() => togglePrice('low-high')} className={`px-3 py-2 rounded-full border min-h-[40px] ${activeFilters.prices.includes('low-high') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Low → High</button>
+              <button onClick={() => togglePrice('high-low')} className={`px-3 py-2 rounded-full border min-h-[40px] ${activeFilters.prices.includes('high-low') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>High → Low</button>
+              <button onClick={() => togglePrice('under200')} className={`px-3 py-2 rounded-full border min-h-[40px] ${activeFilters.prices.includes('under200') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Under ₹200</button>
+              <button onClick={() => togglePrice('under300')} className={`px-3 py-2 rounded-full border min-h-[40px] ${activeFilters.prices.includes('under300') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Under ₹300</button>
+              <button onClick={() => togglePrice('above300')} className={`px-3 py-2 rounded-full border min-h-[40px] ${activeFilters.prices.includes('above300') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above ₹300</button>
             </div>
           </div>
 
           <div className="flex justify-between items-center pt-4 border-t border-black/10 dark:border-white/10">
             <button onClick={() => { setActiveFilters({ ratings: [], prices: [], sort: 'default' }); }} className="px-4 py-2 rounded-xl border">Clear</button>
-            <button onClick={onClose} className={`px-4 py-2 rounded-xl ${THEME.primary}`}>Apply</button>
+            <button onClick={onClose} disabled={!hasSelection} className={`px-4 py-2 rounded-xl transition-all ${hasSelection ? THEME.primary : 'bg-black/10 dark:bg-white/10 text-black/40 dark:text-white/30 cursor-not-allowed'}`}>Apply</button>
           </div>
         </div>
       </div>
@@ -1192,7 +1196,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
     else if (effectiveSort === 'desc') results.sort((a, b) => b.price - a.price);
 
     return results;
-  }, [activeCategory, dietFilter, searchQuery, sortOrder]);
+  }, [activeCategory, dietFilter, searchQuery, sortOrder, activeFilters]);
 
   const orderAgainRecommendations = useMemo(() => {
     if (recentlyOrdered.length === 0) return [];
@@ -1252,8 +1256,8 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
             
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
               
-              <div ref={searchRef} className="relative w-full lg:w-[60%]">
-                <div className={`flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-4 py-3 focus-within:border-[#6F4E37] transition-colors shadow-sm`}>
+              <div ref={searchRef} className="relative w-full lg:w-[48%]">
+                <div className={`flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2.5 focus-within:border-[#6F4E37] transition-colors shadow-sm`}>
                   <Search size={18} className={THEME.muted} />
                   <input 
                     type="text" 
@@ -1267,7 +1271,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') setShowSuggestions(false);
                     }}
-                    className="w-full bg-transparent border-none outline-none px-3 text-sm font-medium text-[#2D241E] dark:text-white"
+                    className="w-full bg-transparent border-none outline-none px-2 text-sm font-medium text-[#2D241E] dark:text-white"
                   />
                   {searchQuery && (
                     <button onClick={() => { setSearchQuery(''); setShowSuggestions(false); }} className={`${THEME.muted} hover:text-red-500 transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center`}>
@@ -1297,31 +1301,29 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                 )}
               </div>
 
-              <div className="flex w-full lg:w-auto items-center gap-4 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
-                <div className={`relative flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 transition-colors shadow-sm shrink-0`}>
-                  <button onClick={onOpenFilters} className="flex items-center gap-2 rounded-full p-2 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                    <Tag size={16} className={THEME.muted}/> <span className="text-sm font-semibold">Filters</span>
-                  </button>
-                </div>
+              <div className="flex w-full lg:w-auto items-center gap-2 overflow-x-auto pb-1 lg:pb-0 hide-scrollbar">
+                <button onClick={onOpenFilters} className={`relative flex items-center justify-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 transition-colors shadow-sm shrink-0 min-h-[44px] min-w-[44px] hover:border-[#6F4E37]`} aria-label="Open filters">
+                  <SlidersHorizontal size={16} className={THEME.muted} />
+                </button>
 
-                <div className="flex items-center gap-2 bg-white dark:bg-[#1C1917] p-1.5 rounded-full border border-gray-200 dark:border-white/15 shadow-sm shrink-0">
-                  <button onClick={() => setDietFilter('All')} className={`px-4 py-1.5 min-h-[48px] sm:min-h-0 rounded-full text-sm font-bold transition-all ${dietFilter === 'All' ? 'bg-[#6F4E37] text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>All</button>
-                  <button onClick={() => setDietFilter('Veg')} className={`flex items-center gap-1.5 px-3 py-1.5 min-h-[48px] sm:min-h-0 rounded-full text-sm font-bold transition-all ${dietFilter === 'Veg' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
+                <div className="flex items-center gap-1.5 bg-white dark:bg-[#1C1917] p-1 rounded-full border border-gray-200 dark:border-white/15 shadow-sm shrink-0">
+                  <button onClick={() => setDietFilter('All')} className={`px-3 py-1.5 min-h-[40px] rounded-full text-xs md:text-sm font-bold transition-all ${dietFilter === 'All' ? 'bg-[#6F4E37] text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>All</button>
+                  <button onClick={() => setDietFilter('Veg')} className={`flex items-center gap-1 px-3 py-1.5 min-h-[40px] rounded-full text-xs md:text-sm font-bold transition-all ${dietFilter === 'Veg' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
                     <div className="flex items-center justify-center w-3 h-3 border border-green-600 rounded-sm"><div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div></div> Veg
                   </button>
-                  <button onClick={() => setDietFilter('Non-Veg')} className={`flex items-center gap-1.5 px-3 py-1.5 min-h-[48px] sm:min-h-0 rounded-full text-sm font-bold transition-all ${dietFilter === 'Non-Veg' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
+                  <button onClick={() => setDietFilter('Non-Veg')} className={`flex items-center gap-1 px-3 py-1.5 min-h-[40px] rounded-full text-xs md:text-sm font-bold transition-all ${dietFilter === 'Non-Veg' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
                     <div className="flex items-center justify-center w-3 h-3 border border-red-600 rounded-sm"><div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div></div> Non-Veg
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="w-full gap-2 overflow-x-auto pb-2 pt-2 hide-scrollbar whitespace-nowrap flex">
+            <div className="w-full gap-1.5 overflow-x-auto pb-1.5 pt-1.5 hide-scrollbar whitespace-nowrap flex">
               {CATEGORIES.map(category => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`shrink-0 px-3 md:px-4 py-2 min-h-[36px] md:min-h-[44px] rounded-full text-xs md:text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
+                  className={`shrink-0 px-3 md:px-3.5 py-2 min-h-[36px] md:min-h-[40px] rounded-full text-xs md:text-[13px] font-semibold whitespace-nowrap transition-all duration-300 ${
                     activeCategory === category 
                       ? `${THEME.primary} shadow-md` 
                       : `${THEME.cardBg} border ${THEME.border} hover:border-[#6F4E37] active:scale-95 text-[#2D241E] dark:text-white`
@@ -3096,23 +3098,26 @@ useEffect(() => {
     setQuickViewSource(null);
   };
 
-  const addToCart = (product, variant = null, overrideDesc = null, customizations = null, instructions = '', prepOption = '') => {
+  const addToCart = (product, variant = null, overrideDesc = null, customizations = null, instructions = '', prepOption = '', replaceUniqueId = null) => {
     const cartItemId = variant ? `${product.id}-${variant.name}` : product.id.toString();
     const uniqueId = `${cartItemId}${customizations ? '-' + btoa(JSON.stringify(customizations)) : ''}${instructions ? '-instr' : ''}${prepOption ? '-' + prepOption : ''}`;
     
     setCart(prev => {
-      const existing = prev.find(item => item.uniqueId === uniqueId);
+      const priorItem = replaceUniqueId ? prev.find(item => item.uniqueId === replaceUniqueId) : null;
+      const preservedQuantity = priorItem?.quantity || 1;
+      const remaining = replaceUniqueId ? prev.filter(item => item.uniqueId !== replaceUniqueId) : prev;
+      const existing = remaining.find(item => item.uniqueId === uniqueId);
       if (existing) {
-        return prev.map(item => item.uniqueId === uniqueId ? { ...item, quantity: item.quantity + 1 } : item);
+        return remaining.map(item => item.uniqueId === uniqueId ? { ...item, quantity: item.quantity + preservedQuantity } : item);
       }
-      return [...prev, { 
+      return [...remaining, { 
         ...product, 
         cartItemId, 
         uniqueId,
         variantName: variant?.name, 
         desc: overrideDesc || product.description,
         price: variant ? variant.price : product.price, 
-        quantity: 1,
+        quantity: preservedQuantity,
         customizations,
         instructions,
         prepOption
@@ -3378,30 +3383,6 @@ const handlePlaceOrder = (discountAmount) => {
                   handleQuickView(item, 'cart');
                 }}
               />
-<CheckoutModal
-          isOpen={isCheckoutOpen}
-          onClose={() => setIsCheckoutOpen(false)}
-          onBackToCart={() => {
-            setIsCheckoutOpen(false);
-            setIsCartOpen(true);
-          }}
-          cart={cart}
-          cartTotal={cartTotal}
-          cartTax={cartTax}
-          appliedDiscount={pendingDiscount}
-          availableCoupons={earnedCoupons}
-          onRedeemCoupon={handleRedeemCoupon}
-          orderMode={orderMode}
-          tableNumber={tableNumber}
-          addToCart={addToCart}
-          onQuickView={(item) => {
-            setIsCheckoutOpen(false);
-            handleQuickView(item, 'checkout');
-          }}
-          // 👇 Change this line exactly like this:
-          onConfirm={(finalDiscount) => handlePlaceOrder(finalDiscount)} 
-        />
-
         <BillSettlementModal 
           isOpen={isBillModalOpen} 
           onClose={() => setIsBillModalOpen(false)} 
