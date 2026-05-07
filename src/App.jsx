@@ -136,15 +136,15 @@ const RAW_MENU_ITEMS = [
   { id: 1, name: 'Espresso', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 150, image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=500&q=80', variants: vEspresso(150) },
   { id: 2, name: 'Cappuccino', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 180, image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=500&q=80', variants: vCoffee(180) },
   { id: 3, name: 'Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 199, image: 'https://images.unsplash.com/photo-1561882468-9110e03e0f78?w=500&q=80', variants: vCoffee(199) },
-  { id: 4, name: 'Cold Brew', category: 'Coffee', type: 'Veg', tempType: 'cold', price: 220, image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&q=80', variants: vCoffee(220) },
+  { id: 4, name: 'Cold Brew', category: 'Coffee', type: 'Veg', tempType: 'cold', price: 159, image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&q=80', variants: vCoffee(159) },
   { id: 5, name: 'Mocha', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 210, image: 'https://images.unsplash.com/photo-1619286310410-a95de97b0aec?w=500&q=80&auto=format&fit=crop', variants: vCoffee(210) },
   { id: 6, name: 'Americano', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 150, image: 'https://images.unsplash.com/photo-1551030173-122aabc4489c?w=500&q=80', variants: vCoffee(150) },
   { id: 7, name: 'Iced Coffee', category: 'Coffee', type: 'Veg', tempType: 'cold', price: 190, image: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=500&q=80&auto=format&fit=crop', variants: vCoffee(190) },
   { id: 8, name: 'Flat White', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 199, image: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=500&q=80', variants: vCoffee(199) },
-  { id: 9, name: 'Caramel Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 230, image: 'https://images.pexels.com/photos/214333/pexels-photo-214333.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(230) },
-  { id: 10, name: 'Vanilla Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 220, image: 'https://images.pexels.com/photos/4869287/pexels-photo-4869287.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(220) },
-  { id: 34, name: 'Macchiato', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 220, image: 'https://images.unsplash.com/photo-1563090308-5a7889e40542?w=500&q=80&auto=format&fit=crop', variants: vEspresso(220) },
-  { id: 35, name: 'Cortado', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 220, image: 'https://images.unsplash.com/photo-1519532059956-a63a37af5deb?w=500&q=80&auto=format&fit=crop', variants: vEspresso(220) },
+  { id: 9, name: 'Caramel Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 189, image: 'https://images.pexels.com/photos/214333/pexels-photo-214333.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(189) },
+  { id: 10, name: 'Vanilla Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 159, image: 'https://images.pexels.com/photos/4869287/pexels-photo-4869287.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(159) },
+  { id: 34, name: 'Macchiato', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 159, image: 'https://images.unsplash.com/photo-1563090308-5a7889e40542?w=500&q=80&auto=format&fit=crop', variants: vEspresso(159) },
+  { id: 35, name: 'Cortado', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 159, image: 'https://images.unsplash.com/photo-1519532059956-a63a37af5deb?w=500&q=80&auto=format&fit=crop', variants: vEspresso(159) },
   { id: 36, name: 'Drip Coffee', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 300, image:'https://images.unsplash.com/photo-1643427517196-7822b972517f?w=500&q=80&auto=format&fit=crop', variants: vCoffee(300)},
   { id: 37, name: 'Fresh Press', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 320, image: 'https://images.pexels.com/photos/36450276/pexels-photo-36450276.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(320)},
   { id: 38, name: 'Affogato', category: 'Coffee', type: 'Veg', tempType: 'mixed', price: 280, image: 'https://images.pexels.com/photos/36579970/pexels-photo-36579970.png?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(280)},
@@ -152,7 +152,7 @@ const RAW_MENU_ITEMS = [
   { id: 100, name: 'Mango Smoothie', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 180, image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=500&q=80', variants: vCoffee(180) },
   { id: 101, name: 'Strawberry Banana Smoothie', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 210, image: 'https://images.pexels.com/photos/29653642/pexels-photo-29653642.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(210) },
   { id: 102, name: 'Dragon Fruit Punch', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 190, image: 'https://images.pexels.com/photos/12144880/pexels-photo-12144880.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(190) },
-  { id: 103, name: 'Mixed Berry Power', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 220, image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500&q=80', variants: vCoffee(220) },
+  { id: 103, name: 'Mixed Berry Power', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 159, image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500&q=80', variants: vCoffee(159) },
   { id: 104, name: 'Orange Avocado Smoothie', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 170, image: 'https://images.unsplash.com/photo-1654084767590-a38c7f0f5bd3?w=500&q=80&auto=format&fit=crop', variants: vCoffee(170) },
   { id: 105, name: 'Watermelon Slush', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 150, image: 'https://images.unsplash.com/photo-1721363005742-d83ecaea4979?w=500&q=80', variants: vCoffee(150) },
   { id: 106, name: 'Green Detox', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 250, image: 'https://images.unsplash.com/photo-1755553860286-324efe8bf892?w=500&q=80', variants: vCoffee(250) },
@@ -160,10 +160,10 @@ const RAW_MENU_ITEMS = [
   { id: 108, name: 'Strawberry MilkShake', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 180, image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=500&q=80', variants: vCoffee(180) },
   { id: 109, name: 'Rich Chocolate MilkShake', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 190, image: 'https://images.unsplash.com/photo-1590373927063-cb2d69209a8b?w=500&q=80&auto=format&fit=crop', variants: vCoffee(190) },
   { id: 110, name: 'Strawberry Smoothie', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 190, image: 'https://images.unsplash.com/photo-1553177595-4de2bb0842b9?w=500&q=80', variants: vCoffee(190) },
-  { id: 111, name: 'Oreo Crumble Shake', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 220, image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&q=80', variants: vCoffee(220) },
+  { id: 111, name: 'Oreo Crumble Shake', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 159, image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&q=80', variants: vCoffee(159) },
   { id: 112, name: 'Kiwi', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 210, image: 'https://images.pexels.com/photos/8679377/pexels-photo-8679377.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(210) },
-  { id: 113, name: 'Caramel Frappe', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 230, image: 'https://plus.unsplash.com/premium_photo-1695035005979-0682199ef755?w=500&q=80', variants: vCoffee(230) },
-  { id: 114, name: 'Muskmelon Shake', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 240, image: 'https://image.cdn.shpy.in/403544/SKU-1521_0-1740644283580.jpg??w=500&q=80', variants: vCoffee(240) },
+  { id: 113, name: 'Caramel Frappe', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 189, image: 'https://plus.unsplash.com/premium_photo-1695035005979-0682199ef755?w=500&q=80', variants: vCoffee(189) },
+  { id: 114, name: 'Muskmelon Shake', category: 'Smoothies & Shakes', type: 'Veg', tempType: 'cold', price: 180, image: 'https://image.cdn.shpy.in/403544/SKU-1521_0-1740644283580.jpg??w=500&q=80', variants: vCoffee(180) },
   { id: 11, name: 'Butter Croissant', category: 'Bakery', type: 'Veg', price: 120, image: 'https://images.unsplash.com/photo-1619540158579-1b4fd3529849?w=500&q=80&auto=format&fit=crop', variants: vFood(120) },
   { id: 45, name: "Chocolate Croissant", category: "Bakery", type: "Veg", price: 160, image: "https://images.unsplash.com/photo-1718897266472-5b7229ebdd3d?w=500&q=80&auto=format&fit=crop", variants: vFood(160) },
   { id: 12, name: 'Blueberry Muffins', category: 'Bakery', type: 'Veg', price: 130, image: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=500&q=80', variants: vFood(130) },
@@ -181,7 +181,7 @@ const RAW_MENU_ITEMS = [
   { id: 18, name: 'Chicken Pizza', category: 'Fast Food', type: 'Non-Veg', price: 280, image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80', variants: vPizza(280) },
   { id: 22, name: 'Peperino pizza', category: 'Fast Food', type: 'Veg', price: 250, image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&q=80', variants: vPizza(250) },
   { id: 23, name: 'Chicken Wrap', category: 'Fast Food', type: 'Non-Veg', price: 300, image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&q=80&auto=format&fit=crop', variants: vMeal(300) },
-  { id: 24, name: 'Cheesecake', category: 'Desserts', type: 'Veg', price: 220, image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=500&q=80', variants: vCake(220) },
+  { id: 24, name: 'Cheesecake', category: 'Desserts', type: 'Veg', price: 159, image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=500&q=80', variants: vCake(159) },
   { id: 25, name: 'Chocolate Cake', category: 'Desserts', type: 'Veg', price: 199, image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&q=80', variants: vCake(199) },
   { id: 41, name: 'Cup Cake', category: 'Desserts', type: 'Veg', price: 199, image: 'https://images.unsplash.com/photo-1614707269211-474b2510b3ad?w=500&q=80&auto=format&fit=crop', variants: vFood(199) },
   { id: 26, name: 'Vanilla Ice Cream', category: 'Desserts', type: 'Veg', price: 150, image: 'https://images.pexels.com/photos/16630827/pexels-photo-16630827.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vIceCream(150) },
@@ -814,7 +814,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto md:max-h-[95vh] hide-scrollbar relative pb-36 scroll-smooth overscroll-contain">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto hide-scrollbar relative pb-48 md:pb-48 scroll-smooth overscroll-contain" style={{ maxHeight: 'calc(95vh - 120px)' }}>
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -900,7 +900,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
             <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="e.g. Less ice, extra spicy..." className={`w-full p-3 rounded-xl border ${THEME.border} bg-transparent outline-none focus:border-[#6F4E37] text-sm text-[#2D241E] dark:text-white resize-none h-20`} />
           </div>
 
-          <div className="sticky bottom-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-[#FAF7F2] dark:bg-[#12100E] flex items-center justify-between gap-6 z-30 shadow-[0_-8px_20px_rgba(0,0,0,0.06)]">
+          <div className="absolute bottom-0 left-0 right-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-[#FAF7F2] dark:bg-[#12100E] flex items-center justify-between gap-6 z-40 shadow-[0_-8px_20px_rgba(0,0,0,0.1)] px-6 md:px-8 py-6">
             <span className="text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
             <button onClick={handleAdd} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-xl hover:scale-105 active:scale-95 ${THEME.primary}`}>
               {actionLabel}
@@ -1038,10 +1038,8 @@ const FiltersModal = ({ isOpen, onClose, activeFilters, setActiveFilters }) => {
   return (
     <div className="fixed inset-0 z-[220] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className={`${THEME.cardBg} w-full max-w-md rounded-3xl p-6 shadow-2xl relative` }>
-        <div className="flex justify-center mb-4">
-          <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full min-h-[48px] min-w-[48px] flex items-center justify-center"><X size={20}/></button>
-        </div>
-        <div className="flex items-center justify-center gap-2 mb-3">
+        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/5 dark:bg-white/5 rounded-full min-h-[48px] min-w-[48px] flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors z-50"><X size={20}/></button>
+        <div className="flex items-center justify-center gap-2 mb-6 mt-6">
           <SlidersHorizontal size={18} className={THEME.muted} />
           <h3 className="text-xl font-bold text-center">Filters</h3>
         </div>
@@ -1257,7 +1255,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
 
         <ComboBuilder addToCart={addToCart} />
 
-        <div className={`sticky top-[80px] md:top-[90px] z-30 pb-4 pt-4 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '1rem 100vw' }}>
+        <div className={`sticky top-[72px] md:top-[84px] z-40 pb-4 pt-4 bg-[#FAF7F2] dark:bg-[#12100E] transition-colors border-b border-black/5 dark:border-white/5`} style={{ margin: '0 -100vw', padding: '1rem 100vw' }}>
           <div className="flex flex-col gap-4 reveal-on-scroll max-w-[1600px] mx-auto w-full" style={{ transitionDelay: '0.1s' }}>
             
             <div className="flex items-center gap-2 lg:gap-3 flex-nowrap overflow-x-auto hide-scrollbar pb-1">
@@ -1320,13 +1318,13 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                 <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${dietFilter === 'Veg' ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
                   <div className={`w-3 h-3 rounded-full bg-white transition-transform ${dietFilter === 'Veg' ? 'translate-x-4' : 'translate-x-0'}`} />
                 </div>
-                <span>{dietFilter === 'Veg' ? 'Veg On' : 'All Items'}</span>
+                <span>{dietFilter === 'Veg' ? 'Veg Mode' : 'All Items'}</span>
               </button>
               </div>
               </div>
             </div>
 
-            <div className="w-full gap-1.5 overflow-x-auto pb-1 pt-0.5 hide-scrollbar whitespace-nowrap flex">
+            <div className="w-full gap-2 overflow-x-auto pb-1 pt-0.5 hide-scrollbar whitespace-nowrap flex">
               {CATEGORIES.map(category => (
                 <button
                   key={category}
@@ -1508,7 +1506,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
         )}
 
         {filteredAndSortedMenu.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 pt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 pt-8">
             {filteredAndSortedMenu.map((item, index) => (
               <ProductCard 
                 key={`${item.id}-${sortOrder}`} 
@@ -2145,7 +2143,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
 
         <div className="flex-1 overflow-y-auto hide-scrollbar pr-1">
         {viewingItem ? (
-          <div className="flex flex-col h-full min-h-0">
+          <div className="relative flex flex-col h-full min-h-0">
             <div className="relative flex items-center justify-between gap-3 pb-4 border-b border-black/10 dark:border-white/10 sticky top-0 bg-inherit z-20">
               <button onClick={handleCloseItem} className="flex items-center gap-2 text-[#6F4E37] dark:text-[#D4B895] font-bold hover:underline min-h-[44px] px-2">
                 <ChevronLeft size={20} /> Back to Favorites
@@ -2160,7 +2158,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
               </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar py-6 pr-1 space-y-6 pb-36 scroll-smooth overscroll-contain">
+            <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar py-6 pr-1 space-y-6 pb-48 scroll-smooth overscroll-contain">
               <div className="flex gap-4 mb-2 items-start">
                 <img src={viewingItem.image} alt={viewingItem.name} className="w-[132px] h-[132px] sm:w-40 sm:h-40 rounded-xl object-cover shrink-0" fetchpriority="high" loading="lazy" />
                 <div className="flex-1">
@@ -2226,7 +2224,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
               </div>
             </div>
 
-            <div className="pt-4 border-t border-black/10 dark:border-white/10 sticky bottom-0 bg-[#FAF7F2] dark:bg-[#12100E] z-30 flex items-center justify-between gap-4 shadow-[0_-8px_20px_rgba(0,0,0,0.06)]">
+            <div className="absolute bottom-0 left-0 right-0 pt-4 border-t border-black/10 dark:border-white/10 bg-[#FAF7F2] dark:bg-[#12100E] z-40 flex items-center justify-between gap-4 shadow-[0_-8px_20px_rgba(0,0,0,0.1)] px-6 md:px-8 py-6">
               <span className="text-3xl sm:text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
               <button onClick={handleAddToCart} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-lg hover:scale-105 active:scale-95 ${THEME.primary}`}>
                 Add+
