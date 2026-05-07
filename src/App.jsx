@@ -3021,13 +3021,14 @@ useEffect(() => {
   };
 
   const updateQuantity = (uniqueId, delta) => {
-    setCart(prev => prev.map(item => {
+    setCart(prev => prev.reduce((acc, item) => {
       if (item.uniqueId === uniqueId) {
         const newQ = item.quantity + delta;
-        return newQ > 0 ? { ...item, quantity: newQ } : item;
-      }
-      return item;
-    }).filter(item => item.quantity > 0));
+        if (newQ > 0) acc.push({ ...item, quantity: newQ });
+        // if newQ <= 0, omit the item (remove from cart)
+      } else acc.push(item);
+      return acc;
+    }, []));
   };
 
   const removeFromCart = (uniqueId) => setCart(prev => prev.filter(item => item.uniqueId !== uniqueId));
