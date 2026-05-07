@@ -750,7 +750,7 @@ const ComboBuilder = ({ addToCart }) => {
   );
 };
 
-const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favorites, source }) => {
+const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favorites, source, prefill }) => {
   if (!isOpen || !item) return null;
 
   const hasVariants = item.variants && item.variants.length > 0;
@@ -763,15 +763,21 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
   const isFav = favorites.includes(item.id);
 
   useEffect(() => {
-    setSelectedVariant(hasVariants ? item.variants[0] : null);
-    setSelectedPrep(item.prepOptions?.[0] || '');
-    setInstructions('');
+    const desiredVariant = source === 'cart' ? item.variantName : prefill?.variantName;
+    const nextVariant = hasVariants ? (item.variants.find((v) => v.name === desiredVariant) || item.variants[0]) : null;
+    setSelectedVariant(nextVariant);
+    setSelectedPrep((source === 'cart' ? item.prepOption : prefill?.prepOption) || item.prepOptions?.[0] || '');
+    setInstructions(source === 'cart' ? (item.instructions || '') : '');
     const defaultCustoms = {};
+    const selectedCustoms = source === 'cart' ? (item.selectedCustomizations || {}) : {};
     if (item.customizations) {
-      Object.entries(item.customizations).forEach(([key, options]) => { defaultCustoms[key] = options[0]; });
+      Object.entries(item.customizations).forEach(([key, options]) => {
+        const fallback = Array.isArray(options) ? options[0] : options;
+        defaultCustoms[key] = selectedCustoms[key] || fallback;
+      });
     }
     setCustoms(defaultCustoms);
-  }, [item, isOpen, hasVariants]);
+  }, [item, isOpen, hasVariants, source, prefill]);
   
   const ratingInfo = getItemRating(item.id);
 
@@ -808,7 +814,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto md:max-h-[95vh] hide-scrollbar relative md:pb-36 scroll-smooth overscroll-contain">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start overflow-y-auto md:max-h-[95vh] hide-scrollbar relative pb-36 scroll-smooth overscroll-contain">
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -878,7 +884,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
                   <div key={key} className="space-y-2">
                     <h4 className="font-bold text-sm text-[#2D241E] dark:text-white capitalize">{key} Options</h4>
                     <div className="flex flex-wrap gap-2">
-                      {options.map(opt => (
+                      {(Array.isArray(options) ? options : [options]).map(opt => (
                         <button key={opt} onClick={() => setCustoms(prev => ({...prev, [key]: opt}))} className={`px-4 py-2 min-h-[48px] rounded-lg border text-xs font-semibold transition-all ${customs[key] === opt ? 'border-[#6F4E37] bg-[#6F4E37]/10 text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] dark:bg-[#D4B895]/10' : `${THEME.border} text-[#8A7B72] dark:text-[#A89F95] hover:border-black/30 dark:hover:border-white/30`}`}>
                           {opt}
                         </button>
@@ -894,7 +900,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
             <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="e.g. Less ice, extra spicy..." className={`w-full p-3 rounded-xl border ${THEME.border} bg-transparent outline-none focus:border-[#6F4E37] text-sm text-[#2D241E] dark:text-white resize-none h-20`} />
           </div>
 
-          <div className="sticky bottom-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-white dark:bg-[#1C1917] flex items-center justify-between gap-6 z-30 backdrop-blur-sm">
+          <div className="sticky bottom-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-[#FAF7F2] dark:bg-[#12100E] flex items-center justify-between gap-6 z-30 shadow-[0_-8px_20px_rgba(0,0,0,0.06)]">
             <span className="text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
             <button onClick={handleAdd} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-xl hover:scale-105 active:scale-95 ${THEME.primary}`}>
               {actionLabel}
@@ -939,7 +945,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
   };
 
   return (
-    <div className={`group flex flex-row sm:flex-col justify-between gap-3 sm:gap-0 ${THEME.cardBg} rounded-2xl p-4 border ${THEME.border} shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in relative w-full overflow-hidden cursor-pointer`} onClick={() => onQuickView(item)}>
+    <div className={`group flex flex-row sm:flex-col justify-between gap-3 sm:gap-0 ${THEME.cardBg} rounded-2xl p-4 border ${THEME.border} shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in relative w-full overflow-hidden cursor-pointer`} onClick={() => onQuickView(item, 'menu', { variantName: selectedVariant?.name, prepOption: item.prepOptions?.[0] || '' })}>
       <div className="relative w-2/5 sm:w-full shrink-0 aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden bg-black/5 dark:bg-white/5">
         <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" fetchpriority="high" loading="lazy" />
 
@@ -1002,7 +1008,7 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
                 <button onClick={handleAddOrIncrement} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors min-h-[34px] min-w-[34px] flex items-center justify-center"><Plus size={15} strokeWidth={2.5}/></button>
               </div>
             ) : (
-              <button onClick={() => onQuickView(item)} className={`w-full max-w-[138px] py-3 min-h-[46px] rounded-xl font-bold text-sm transition-transform shadow-md hover:scale-105 active:scale-95 ${THEME.primary}`}>
+              <button onClick={() => onQuickView(item, 'menu', { variantName: selectedVariant?.name, prepOption: item.prepOptions?.[0] || '' })} className={`w-full max-w-[138px] py-3 min-h-[46px] rounded-xl font-bold text-sm transition-transform shadow-md hover:scale-105 active:scale-95 ${THEME.primary}`}>
                 Add+
               </button>
             )}
@@ -2153,7 +2159,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
               </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar py-6 pr-1 space-y-6">
+            <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar py-6 pr-1 space-y-6 pb-36 scroll-smooth overscroll-contain">
               <div className="flex gap-4 mb-2 items-start">
                 <img src={viewingItem.image} alt={viewingItem.name} className="w-[132px] h-[132px] sm:w-40 sm:h-40 rounded-xl object-cover shrink-0" fetchpriority="high" loading="lazy" />
                 <div className="flex-1">
@@ -2219,7 +2225,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
               </div>
             </div>
 
-            <div className="pt-4 border-t border-black/10 dark:border-white/10 sticky bottom-0 bg-white dark:bg-[#1C1917] z-30 flex items-center justify-between gap-4 backdrop-blur-sm">
+            <div className="pt-4 border-t border-black/10 dark:border-white/10 sticky bottom-0 bg-[#FAF7F2] dark:bg-[#12100E] z-30 flex items-center justify-between gap-4 shadow-[0_-8px_20px_rgba(0,0,0,0.06)]">
               <span className="text-3xl sm:text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
               <button onClick={handleAddToCart} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-lg hover:scale-105 active:scale-95 ${THEME.primary}`}>
                 Add+
@@ -2322,7 +2328,7 @@ const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto hide-scrollbar">
       <form onSubmit={handleSubmit} className={`w-full max-w-sm ${THEME.cardBg} p-8 rounded-3xl shadow-2xl space-y-6 relative`}>
         <button type="button" onClick={onClose} className="absolute top-4 right-4 p-2 text-[#2D241E] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 rounded-full min-h-[48px] min-w-[48px] flex items-center justify-center"><X size={20}/></button>
         <div className="text-center">
@@ -2896,6 +2902,7 @@ export default function App() {
 
   const [quickViewItem, setQuickViewItem] = useState(null);
   const [quickViewSource, setQuickViewSource] = useState(null);
+  const [quickViewPrefill, setQuickViewPrefill] = useState(null);
   const [dietFilter, setDietFilter] = useState('All');
   
   const [activeOrderId, setActiveOrderId] = useState(null);
@@ -3071,9 +3078,20 @@ useEffect(() => {
     });
     return () => activeIntervals.forEach(timer => timer && clearTimeout(timer));
   }, [orders]);
-  const handleQuickView = (item, source = 'menu') => {
+  const handleQuickView = (item, source = 'menu', prefill = null) => {
+    const baseItem = MENU_ITEMS.find((entry) => entry.id === item.id) || item;
+    const safeItem = source === 'cart'
+      ? {
+          ...baseItem,
+          ...item,
+          customizations: baseItem.customizations || null,
+          selectedCustomizations: item.customizations || {},
+        }
+      : { ...baseItem, ...item };
+
     setQuickViewSource(source);
-    setQuickViewItem(item);
+    setQuickViewPrefill(prefill);
+    setQuickViewItem(safeItem);
     setRecentlyViewed(prev => {
       const newRecent = [item.id, ...prev.filter(id => id !== item.id)].slice(0, 10);
       return newRecent;
@@ -3082,6 +3100,7 @@ useEffect(() => {
 
   const handleCloseQuickView = () => {
     setQuickViewItem(null);
+    setQuickViewPrefill(null);
     if (quickViewSource === 'cart') setIsCartOpen(true);
     if (quickViewSource === 'favorites') setIsFavOpen(true);
     if (quickViewSource === 'checkout') setIsCheckoutOpen(true);
@@ -3340,6 +3359,7 @@ const handlePlaceOrder = (discountAmount) => {
           favorites={favorites}
           toggleFavorite={toggleFavorite}
           source={quickViewSource}
+          prefill={quickViewPrefill}
         />
 
         <CheckoutModal
@@ -3497,7 +3517,9 @@ const handlePlaceOrder = (discountAmount) => {
         .animate-slide-down { animation: slideDown 0.3s ease-out forwards; }
         .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
         
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        html, body { scrollbar-width: none; -ms-overflow-style: none; }
+        html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
     </>
