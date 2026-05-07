@@ -13,7 +13,7 @@ import {
 // ==========================================
 const r10 = (n) => Math.round(n / 10) * 10; 
 
-const getItemRating = (id) => ({ rating: (4.0 + (id % 10) / 10).toFixed(1), reviews: 40 + (id * 13) % 250 });
+const getItemRating = (id) => ({ rating: (4.0 + (id % 10) / 10).toFixed(1), reviews: 1000 + (id * 37) % 1500 });
 const isItemPopular = (id) => id % 4 === 0;
 
 const vCoffee = (p) => [
@@ -2035,7 +2035,9 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
             >
               View Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})
             </button>
-            <button onClick={onClose} className="sr-only" aria-hidden="true">Close</button>
+            <button onClick={onClose} className="p-2 bg-[#F3ECE7] dark:bg-[#2E2A28] rounded-full hover:bg-opacity-95 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Close favorites">
+               <X size={20} className="text-[#2D241E] dark:text-white" />
+            </button>
           </div>
         </div>
 
@@ -2829,6 +2831,13 @@ export default function App() {
       document.body.style.overflow = prevOverflow;
     };
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isFavOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [isFavOpen]);
 
   useEffect(() => { localStorage.setItem('brewbite_favs', JSON.stringify(favorites)); }, [favorites]);
   useEffect(() => { localStorage.setItem('brewbite_recent', JSON.stringify(recentlyViewed)); }, [recentlyViewed]);
