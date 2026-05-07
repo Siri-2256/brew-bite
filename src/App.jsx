@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   ShoppingBag, Menu, X, Search, Moon, Sun, 
-  Coffee, ChevronRight, Plus, Minus, Trash2, Star, 
+  Coffee, ChevronRight, ChevronLeft, Plus, Minus, Trash2, Star, 
   ArrowUpDown, CheckCircle2, Loader2, Heart, Clock, 
   Tag, Flame, Package, Truck, Utensils, MessageSquare, 
   ArrowRight, Bell, Lock, MapPin, History, RefreshCcw,
