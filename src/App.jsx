@@ -892,10 +892,10 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
             <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="e.g. Less ice, extra spicy..." className={`w-full p-3 rounded-xl border ${THEME.border} bg-transparent outline-none focus:border-[#6F4E37] text-sm text-[#2D241E] dark:text-white resize-none h-20`} />
           </div>
 
-          <div className="mt-auto pt-6 border-t border-black/10 dark:border-white/10 flex items-center justify-between gap-6">
+          <div className="sticky bottom-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-inherit flex items-center justify-between gap-6 z-20">
             <span className="text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
             <button onClick={handleAdd} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-xl hover:scale-105 active:scale-95 ${THEME.primary}`}>
-              Add to Cart <Plus size={20} />
+              Add+ <Plus size={20} />
             </button>
           </div>
         </div>
@@ -997,8 +997,8 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
                 <button onClick={handleAddOrIncrement} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors min-h-[34px] min-w-[34px] flex items-center justify-center"><Plus size={15} strokeWidth={2.5}/></button>
               </div>
             ) : (
-              <button onClick={handleAddOrIncrement} className={`w-full max-w-[138px] py-3 min-h-[46px] rounded-xl font-bold text-sm transition-transform shadow-md hover:scale-105 active:scale-95 ${THEME.primary}`}>
-                Add +
+              <button onClick={() => onQuickView(item)} className={`w-full max-w-[138px] py-3 min-h-[46px] rounded-xl font-bold text-sm transition-transform shadow-md hover:scale-105 active:scale-95 ${THEME.primary}`}>
+                Add+
               </button>
             )}
           </div>
@@ -1303,8 +1303,8 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                             </button>
                           </div>
                         ) : (
-                          <button onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')} className="mt-auto w-full py-3 min-h-[48px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] group-hover:bg-[#6F4E37] group-hover:text-white transition-colors">
-                            Add to Cart
+                          <button onClick={() => onQuickView(item, 'order-again')} className="mt-auto w-full py-3 min-h-[48px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] group-hover:bg-[#6F4E37] group-hover:text-white transition-colors">
+                            Add+
                           </button>
                         )}
                       </div>
@@ -1330,11 +1330,11 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                              onQuickView(item, 'order-again');
                             }}
                             className="px-3 py-1.5 text-[11px] font-bold rounded-md border border-[#6F4E37]/40 text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37]/10 shrink-0"
                           >
-                            Add
+                            Add+
                           </button>
                         </div>
                       ))}
@@ -1403,11 +1403,11 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '');
+                              onQuickView(item, 'recently-viewed');
                             }}
                             className="mt-auto w-full py-2.5 min-h-[44px] rounded-lg text-sm font-bold border border-[#6F4E37] text-[#6F4E37] dark:text-[#D4B895] hover:bg-[#6F4E37] hover:text-white transition-colors"
                           >
-                            Add to Cart
+                            Add+
                           </button>
                         )}
                       </div>
@@ -1982,7 +1982,6 @@ const OrderHistoryModal = ({ isOpen, onClose, history, onReorder }) => {
 };
 
 const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToCart, updateQuantity, toggleFavorite, onQuickView }) => {
-  if (!isFavOpen) return null;
   const favoriteItems = MENU_ITEMS.filter(item => favorites.includes(item.id));
   const [viewingItem, setViewingItem] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -2022,6 +2021,8 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
     }
   };
 
+  if (!isFavOpen) return null;
+
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#FAF7F2] dark:bg-[#12100E] p-4 sm:p-6 animate-fade-in">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col`}>
@@ -2048,71 +2049,82 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
 
         <div className="flex-1 overflow-y-auto hide-scrollbar pr-1">
         {viewingItem ? (
-          <div className="space-y-6">
-            <button onClick={handleCloseItem} className="flex items-center gap-2 text-[#6F4E37] dark:text-[#D4B895] font-bold hover:underline">
-              <ChevronLeft size={20} /> Back to Favorites
-            </button>
-
-            <div className="flex gap-4 mb-6">
-              <img src={viewingItem.image} alt={viewingItem.name} className="w-32 h-32 sm:w-40 sm:h-40 rounded-xl object-cover" fetchpriority="high" loading="lazy" />
-              <div className="flex-1">
-                <h3 className="text-2xl sm:text-3xl font-bold text-[#2D241E] dark:text-white mb-2">{viewingItem.name}</h3>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="flex items-center text-yellow-500">
-                    <Star size={16} fill="currentColor" />
-                    <span className="font-bold ml-1">{ratingInfo.rating}</span>
-                  </div>
-                  <span className={`text-sm ${THEME.muted}`}>({ratingInfo.reviews} reviews)</span>
-                </div>
-                <p className={`text-sm sm:text-base ${THEME.muted} mb-3`}>{viewingItem.category} • {viewingItem.type}</p>
-                <p className="text-3xl sm:text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</p>
-              </div>
-              <button onClick={handleFavToggle} className="p-3 rounded-full bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
-                <Heart size={24} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
+          <div className="flex flex-col h-full min-h-0">
+            <div className="flex items-center justify-between gap-3 pb-4 border-b border-black/10 dark:border-white/10 sticky top-0 bg-inherit z-20">
+              <button onClick={handleCloseItem} className="flex items-center gap-2 text-[#6F4E37] dark:text-[#D4B895] font-bold hover:underline min-h-[44px] px-2">
+                <ChevronLeft size={20} /> Back to Favorites
               </button>
+              <div className="flex items-center gap-2">
+                <button onClick={handleCloseItem} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Close item view">
+                  <X size={24} className="text-[#2D241E] dark:text-white" />
+                </button>
+                <button onClick={handleFavToggle} className="p-2 bg-red-50 dark:bg-red-900/20 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Toggle favorite">
+                  <Heart size={24} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
+                </button>
+              </div>
             </div>
 
-            <p className={`text-sm sm:text-base leading-relaxed ${THEME.muted}`}>{viewingItem.description}</p>
+            <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar py-6 pr-1 space-y-6">
+              <div className="flex gap-4 mb-2">
+                <img src={viewingItem.image} alt={viewingItem.name} className="w-32 h-32 sm:w-40 sm:h-40 rounded-xl object-cover" fetchpriority="high" loading="lazy" />
+                <div className="flex-1">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-[#2D241E] dark:text-white mb-2">{viewingItem.name}</h3>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center text-yellow-500">
+                      <Star size={16} fill="currentColor" />
+                      <span className="font-bold ml-1">{ratingInfo.rating}</span>
+                    </div>
+                    <span className={`text-sm ${THEME.muted}`}>({ratingInfo.reviews} reviews)</span>
+                  </div>
+                  <p className={`text-sm sm:text-base ${THEME.muted} mb-3`}>{viewingItem.category} • {viewingItem.type}</p>
+                </div>
+              </div>
 
-            {viewingItem.variants && viewingItem.variants.length > 0 && (
-              <div>
-                <h4 className="font-bold text-[#2D241E] dark:text-white mb-3">Size / Quantity</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  {viewingItem.variants.map(v => (
-                    <button key={v.name} onClick={() => setSelectedVariant(v)} className={`flex flex-col items-center justify-center p-2 min-h-[48px] rounded-xl border-2 transition-all ${selectedVariant?.name === v.name ? 'border-[#6F4E37] bg-[#6F4E37]/10 dark:bg-[#D4B895]/10' : 'border-black/10 dark:border-white/10'}`}>
-                      <span className={`font-bold text-xs sm:text-sm ${selectedVariant?.name === v.name ? 'text-[#6F4E37] dark:text-[#D4B895]' : 'text-[#2D241E] dark:text-white'}`}>{v.name}</span>
-                      {v.desc && <span className={`text-[10px] mt-0.5 ${selectedVariant?.name === v.name ? 'text-[#6F4E37] dark:text-[#D4B895]' : THEME.muted}`}>{v.desc}</span>}
-                    </button>
+              <p className={`text-sm sm:text-base leading-relaxed ${THEME.muted}`}>{viewingItem.description}</p>
+
+              {viewingItem.variants && viewingItem.variants.length > 0 && (
+                <div>
+                  <h4 className="font-bold text-[#2D241E] dark:text-white mb-3">Size / Quantity</h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    {viewingItem.variants.map(v => (
+                      <button key={v.name} onClick={() => setSelectedVariant(v)} className={`flex flex-col items-center justify-center p-2 min-h-[48px] rounded-xl border-2 transition-all ${selectedVariant?.name === v.name ? 'border-[#6F4E37] bg-[#6F4E37]/10 dark:bg-[#D4B895]/10' : 'border-black/10 dark:border-white/10'}`}>
+                        <span className={`font-bold text-xs sm:text-sm ${selectedVariant?.name === v.name ? 'text-[#6F4E37] dark:text-[#D4B895]' : 'text-[#2D241E] dark:text-white'}`}>{v.name}</span>
+                        {v.desc && <span className={`text-[10px] mt-0.5 ${selectedVariant?.name === v.name ? 'text-[#6F4E37] dark:text-[#D4B895]' : THEME.muted}`}>{v.desc}</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {viewingItem.customizations && Object.keys(viewingItem.customizations).length > 0 && (
+                <div className="space-y-3">
+                  {Object.entries(viewingItem.customizations).map(([key, options]) => (
+                    <div key={key}>
+                      <h4 className="font-bold text-sm text-[#2D241E] dark:text-white capitalize mb-2">{key} Options</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {options.map(opt => (
+                          <button key={opt} onClick={() => setCustoms(prev => ({...prev, [key]: opt}))} className={`px-3 py-2 min-h-[40px] rounded-lg border text-xs font-semibold transition-all ${customs[key] === opt ? 'border-[#6F4E37] bg-[#6F4E37]/10 text-[#6F4E37]' : THEME.border}`}>
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {viewingItem.customizations && Object.keys(viewingItem.customizations).length > 0 && (
-              <div className="space-y-3">
-                {Object.entries(viewingItem.customizations).map(([key, options]) => (
-                  <div key={key}>
-                    <h4 className="font-bold text-sm text-[#2D241E] dark:text-white capitalize mb-2">{key} Options</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {options.map(opt => (
-                        <button key={opt} onClick={() => setCustoms(prev => ({...prev, [key]: opt}))} className={`px-3 py-2 min-h-[40px] rounded-lg border text-xs font-semibold transition-all ${customs[key] === opt ? 'border-[#6F4E37] bg-[#6F4E37]/10 text-[#6F4E37]' : THEME.border}`}>
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+              <div>
+                <h4 className="font-bold text-sm text-[#2D241E] dark:text-white mb-2">Special Instructions</h4>
+                <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="e.g. Less ice, extra spicy..." className={`w-full p-3 rounded-xl border ${THEME.border} bg-transparent outline-none focus:border-[#6F4E37] text-sm text-[#2D241E] dark:text-white resize-none h-20`} />
               </div>
-            )}
-
-            <div>
-              <h4 className="font-bold text-sm text-[#2D241E] dark:text-white mb-2">Special Instructions</h4>
-              <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="e.g. Less ice, extra spicy..." className={`w-full p-3 rounded-xl border ${THEME.border} bg-transparent outline-none focus:border-[#6F4E37] text-sm text-[#2D241E] dark:text-white resize-none h-20`} />
             </div>
 
-            <button onClick={handleAddToCart} className={`w-full py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-lg hover:scale-105 active:scale-95 ${THEME.primary}`}>
-              Add to Cart <Plus size={20} />
-            </button>
+            <div className="pt-4 border-t border-black/10 dark:border-white/10 sticky bottom-0 bg-inherit z-20 flex items-center justify-between gap-4">
+              <span className="text-3xl sm:text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
+              <button onClick={handleAddToCart} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-lg hover:scale-105 active:scale-95 ${THEME.primary}`}>
+                Add+ <Plus size={20} />
+              </button>
+            </div>
           </div>
         ) : favoriteItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 opacity-50">
@@ -2162,10 +2174,10 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                     </div>
                   ) : (
                     <button
-                      onClick={() => addToCart(item, item.variants?.[0] || null, item.description, null, '', item.prepOptions?.[0] || '')}
+                      onClick={() => onQuickView(item, 'recently-viewed')}
                       className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] hover:bg-[#6F4E37] dark:hover:bg-[#D4B895] hover:text-white dark:hover:text-[#12100E] transition-colors flex items-center justify-center gap-2"
                     >
-                      <Plus size={16}/> Add to Cart
+                      <Plus size={16}/> Add+
                     </button>
                   );
                 })()}
@@ -2811,6 +2823,15 @@ export default function App() {
     };
   }, [quickViewItem]);
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isMobileMenuOpen]);
+
   useEffect(() => { localStorage.setItem('brewbite_favs', JSON.stringify(favorites)); }, [favorites]);
   useEffect(() => { localStorage.setItem('brewbite_recent', JSON.stringify(recentlyViewed)); }, [recentlyViewed]);
   useEffect(() => { localStorage.setItem('brewbite_ordered', JSON.stringify(recentlyOrdered)); }, [recentlyOrdered]);
@@ -3140,8 +3161,7 @@ const handlePlaceOrder = (discountAmount) => {
 
         <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMobileMenuOpen(false)} />
         <div className={`fixed inset-y-0 right-0 w-[280px] sm:w-[320px] ${THEME.cardBg} shadow-2xl z-[200] transform transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-           <div className="p-6 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
-             <span className="text-2xl font-bold text-[#2D241E] dark:text-white">Menu</span>
+           <div className="p-6 border-b border-black/10 dark:border-white/10 flex justify-end items-center bg-black/[0.02] dark:bg-white/[0.02]">
              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-black/5 dark:bg-white/5 rounded-full min-h-[48px] min-w-[48px] flex items-center justify-center"><X size={20}/></button>
            </div>
            <div className="flex flex-col p-4 gap-2">
