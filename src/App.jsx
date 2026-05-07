@@ -135,12 +135,12 @@ const UNIQUE_ITEM_DATA = {
 const RAW_MENU_ITEMS = [
   { id: 1, name: 'Espresso', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 150, image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=500&q=80', variants: vEspresso(150) },
   { id: 2, name: 'Cappuccino', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 180, image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=500&q=80', variants: vCoffee(180) },
-  { id: 3, name: 'Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 200, image: 'https://images.unsplash.com/photo-1561882468-9110e03e0f78?w=500&q=80', variants: vCoffee(200) },
+  { id: 3, name: 'Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 199, image: 'https://images.unsplash.com/photo-1561882468-9110e03e0f78?w=500&q=80', variants: vCoffee(199) },
   { id: 4, name: 'Cold Brew', category: 'Coffee', type: 'Veg', tempType: 'cold', price: 220, image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&q=80', variants: vCoffee(220) },
   { id: 5, name: 'Mocha', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 210, image: 'https://images.unsplash.com/photo-1619286310410-a95de97b0aec?w=500&q=80&auto=format&fit=crop', variants: vCoffee(210) },
   { id: 6, name: 'Americano', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 150, image: 'https://images.unsplash.com/photo-1551030173-122aabc4489c?w=500&q=80', variants: vCoffee(150) },
   { id: 7, name: 'Iced Coffee', category: 'Coffee', type: 'Veg', tempType: 'cold', price: 190, image: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=500&q=80&auto=format&fit=crop', variants: vCoffee(190) },
-  { id: 8, name: 'Flat White', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 200, image: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=500&q=80', variants: vCoffee(200) },
+  { id: 8, name: 'Flat White', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 199, image: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=500&q=80', variants: vCoffee(199) },
   { id: 9, name: 'Caramel Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 230, image: 'https://images.pexels.com/photos/214333/pexels-photo-214333.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(230) },
   { id: 10, name: 'Vanilla Latte', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 220, image: 'https://images.pexels.com/photos/4869287/pexels-photo-4869287.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vCoffee(220) },
   { id: 34, name: 'Macchiato', category: 'Coffee', type: 'Veg', tempType: 'hot', price: 220, image: 'https://images.unsplash.com/photo-1563090308-5a7889e40542?w=500&q=80&auto=format&fit=crop', variants: vEspresso(220) },
@@ -172,7 +172,7 @@ const RAW_MENU_ITEMS = [
   { id: 17, name: 'Garlic Bread', category: 'Bakery', type: 'Veg', price: 140, image: 'https://plus.unsplash.com/premium_photo-1711752902734-a36167479983?w=500&q=80&auto=format&fit=crop', variants: vFood(140) },
   { id: 42, name: "Banana Bread", category: "Bakery", type: "Veg", price: 140, image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=500&q=80&auto=format&fit=crop", variants: vFood(140) },
   { id: 46, name: "Cinnamon Roll", category: "Bakery", type: "Veg", price: 170, image: "https://images.pexels.com/photos/20449475/pexels-photo-20449475.jpeg?auto=compress&cs=tinysrgb&w=500", variants: vFood(170) },
-  { id: 15, name: 'Veg Sandwich', category: 'Fast Food', type: 'Veg', price: 200, image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80', variants: vMeal(200) },
+  { id: 15, name: 'Veg Sandwich', category: 'Fast Food', type: 'Veg', price: 199, image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80', variants: vMeal(199) },
   { id: 16, name: 'Veg Cheese Sandwich', category: 'Fast Food', type: 'Veg', price: 180, image: 'https://images.unsplash.com/photo-1639744093378-b2fde867b4d8?w=500&q=80&auto=format&fit=crop', variants: vMeal(180) },
   { id: 47, name: 'Chicken Sandwich', category: 'Fast Food', type: "Non-Veg", price: 250, image: 'https://images.pexels.com/photos/33755315/pexels-photo-33755315.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vMeal(250) },
   { id: 19, name: 'Veg Burger', category: 'Fast Food', type: 'Veg', price: 200, image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&q=80&auto=format&fit=crop', variants: vMeal(200) },
@@ -182,8 +182,8 @@ const RAW_MENU_ITEMS = [
   { id: 22, name: 'Peperino pizza', category: 'Fast Food', type: 'Veg', price: 250, image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&q=80', variants: vPizza(250) },
   { id: 23, name: 'Chicken Wrap', category: 'Fast Food', type: 'Non-Veg', price: 300, image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&q=80&auto=format&fit=crop', variants: vMeal(300) },
   { id: 24, name: 'Cheesecake', category: 'Desserts', type: 'Veg', price: 220, image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=500&q=80', variants: vCake(220) },
-  { id: 25, name: 'Chocolate Cake', category: 'Desserts', type: 'Veg', price: 200, image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&q=80', variants: vCake(200) },
-  { id: 41, name: 'Cup Cake', category: 'Desserts', type: 'Veg', price: 200, image: 'https://images.unsplash.com/photo-1614707269211-474b2510b3ad?w=500&q=80&auto=format&fit=crop', variants: vFood(200) },
+  { id: 25, name: 'Chocolate Cake', category: 'Desserts', type: 'Veg', price: 199, image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&q=80', variants: vCake(199) },
+  { id: 41, name: 'Cup Cake', category: 'Desserts', type: 'Veg', price: 199, image: 'https://images.unsplash.com/photo-1614707269211-474b2510b3ad?w=500&q=80&auto=format&fit=crop', variants: vFood(199) },
   { id: 26, name: 'Vanilla Ice Cream', category: 'Desserts', type: 'Veg', price: 150, image: 'https://images.pexels.com/photos/16630827/pexels-photo-16630827.jpeg?auto=compress&cs=tinysrgb&w=500', variants: vIceCream(150) },
   { id: 27, name: 'Chocolate Ice Cream', category: 'Desserts', type: 'Veg', price: 150, image: 'https://images.unsplash.com/photo-1636696301991-3e176a6b77dc?w=500&q=80&auto=format&fit=crop', variants: vIceCream(150) },
   { id: 28, name: 'Strawberry Ice Cream', category: 'Desserts', type: 'Veg', price: 150, image: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=500&q=80', variants: vIceCream(150) },
@@ -1013,7 +1013,60 @@ const ProductCard = ({ item, addToCart, updateQuantity, cart, toggleFavorite, fa
   );
 };
 
-const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites, onQuickView, onRemoveRecentlyViewed, recentlyViewed, recentlyOrdered, dietFilter, setDietFilter }) => {
+const FiltersModal = ({ isOpen, onClose, activeFilters, setActiveFilters }) => {
+  if (!isOpen) return null;
+  const toggleRating = (r) => {
+    setActiveFilters(prev => {
+      const exists = prev.ratings.includes(r);
+      return { ...prev, ratings: exists ? prev.ratings.filter(x => x !== r) : [...prev.ratings, r] };
+    });
+  };
+  const togglePrice = (p) => {
+    setActiveFilters(prev => {
+      const exists = prev.prices.includes(p);
+      return { ...prev, prices: exists ? prev.prices.filter(x => x !== p) : [...prev.prices, p] };
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[220] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className={`${THEME.cardBg} w-full max-w-md rounded-3xl p-6 shadow-2xl relative` }>
+        <div className="flex justify-center mb-4">
+          <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full min-h-[48px] min-w-[48px] flex items-center justify-center"><X size={20}/></button>
+        </div>
+        <h3 className="text-xl font-bold text-center mb-3">Filters</h3>
+
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-bold mb-2">Rating</h4>
+            <div className="flex gap-2">
+              <button onClick={() => toggleRating('4.0')} className={`px-3 py-2 rounded-full border ${activeFilters.ratings.includes('4.0') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above 4.0</button>
+              <button onClick={() => toggleRating('4.5')} className={`px-3 py-2 rounded-full border ${activeFilters.ratings.includes('4.5') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above 4.5</button>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-bold mb-2">Price</h4>
+            <div className="flex gap-2 flex-wrap">
+              <button onClick={() => togglePrice('low-high')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('low-high') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Low → High</button>
+              <button onClick={() => togglePrice('high-low')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('high-low') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>High → Low</button>
+              <button onClick={() => togglePrice('under200')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('under200') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Under ₹200</button>
+              <button onClick={() => togglePrice('under300')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('under300') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Under ₹300</button>
+              <button onClick={() => togglePrice('above300')} className={`px-3 py-2 rounded-full border ${activeFilters.prices.includes('above300') ? 'bg-[#6F4E37] text-white' : THEME.cardBg}`}>Above ₹300</button>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center pt-4 border-t border-black/10 dark:border-white/10">
+            <button onClick={() => { setActiveFilters({ ratings: [], prices: [], sort: 'default' }); }} className="px-4 py-2 rounded-xl border">Clear</button>
+            <button onClick={onClose} className={`px-4 py-2 rounded-xl ${THEME.primary}`}>Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites, onQuickView, onRemoveRecentlyViewed, recentlyViewed, recentlyOrdered, dietFilter, setDietFilter, activeFilters, onOpenFilters }) => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('default'); 
@@ -1108,8 +1161,35 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
     });
 
     const isCheap = searchQuery.toLowerCase().trim().includes('cheap');
-    if (sortOrder === 'asc' || isCheap) results.sort((a, b) => a.price - b.price);
-    else if (sortOrder === 'desc') results.sort((a, b) => b.price - a.price);
+    // Apply external filter-driven sort if present
+    const effectiveSort = (activeFilters && activeFilters.prices && activeFilters.prices.includes('low-high')) ? 'asc' : (activeFilters && activeFilters.prices && activeFilters.prices.includes('high-low')) ? 'desc' : sortOrder;
+
+    // Apply rating filters
+    if (activeFilters && activeFilters.ratings && activeFilters.ratings.length > 0) {
+      results = results.filter(item => {
+        const r = parseFloat(getItemRating(item.id).rating);
+        return activeFilters.ratings.some(f => {
+          if (f === '4.5') return r >= 4.5;
+          if (f === '4.0') return r >= 4.0;
+          return true;
+        });
+      });
+    }
+
+    // Apply price range filters (OR semantics)
+    if (activeFilters && activeFilters.prices && activeFilters.prices.length > 0) {
+      results = results.filter(item => {
+        return activeFilters.prices.some(p => {
+          if (p === 'under200') return item.price < 200;
+          if (p === 'under300') return item.price < 300;
+          if (p === 'above300') return item.price >= 300;
+          return true;
+        });
+      });
+    }
+
+    if (effectiveSort === 'asc' || isCheap) results.sort((a, b) => a.price - b.price);
+    else if (effectiveSort === 'desc') results.sort((a, b) => b.price - a.price);
 
     return results;
   }, [activeCategory, dietFilter, searchQuery, sortOrder]);
@@ -1218,17 +1298,10 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
               </div>
 
               <div className="flex w-full lg:w-auto items-center gap-4 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
-                <div className={`relative flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-4 py-3 focus-within:border-[#6F4E37] transition-colors shadow-sm shrink-0`}>
-                  <ArrowUpDown size={16} className={THEME.muted} />
-                  <select 
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value)}
-                    className={`w-full bg-transparent border-none outline-none px-3 text-sm font-medium appearance-none cursor-pointer ${THEME.text} min-h-[24px]`}
-                  >
-                    <option value="default" className="bg-white dark:bg-[#1C1917] text-[#2D241E] dark:text-white">Sort by relevance</option>
-                    <option value="asc" className="bg-white dark:bg-[#1C1917] text-[#2D241E] dark:text-white">Price: Low to High</option>
-                    <option value="desc" className="bg-white dark:bg-[#1C1917] text-[#2D241E] dark:text-white">Price: High to Low</option>
-                  </select>
+                <div className={`relative flex items-center ${THEME.cardBg} rounded-full border ${THEME.border} px-3 py-2 transition-colors shadow-sm shrink-0`}>
+                  <button onClick={onOpenFilters} className="flex items-center gap-2 rounded-full p-2 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                    <Tag size={16} className={THEME.muted}/> <span className="text-sm font-semibold">Filters</span>
+                  </button>
                 </div>
 
                 <div className="flex items-center gap-2 bg-white dark:bg-[#1C1917] p-1.5 rounded-full border border-gray-200 dark:border-white/15 shadow-sm shrink-0">
@@ -1243,7 +1316,7 @@ const MenuBoard = ({ cart, addToCart, updateQuantity, toggleFavorite, favorites,
               </div>
             </div>
 
-            <div className="flex w-full gap-2 overflow-x-auto pb-2 pt-2 hide-scrollbar sm:grid sm:grid-cols-3 lg:grid-cols-7 sm:overflow-visible sm:pb-0">
+            <div className="w-full gap-2 overflow-x-auto pb-2 pt-2 hide-scrollbar whitespace-nowrap flex">
               {CATEGORIES.map(category => (
                 <button
                   key={category}
@@ -2777,6 +2850,8 @@ export default function App() {
 
   const [isFavOpen, setIsFavOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({ ratings: [], prices: [], sort: 'default' });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
@@ -2864,6 +2939,15 @@ export default function App() {
       document.body.style.overflow = prevOverflow;
     };
   }, [quickViewItem]);
+
+  // Centralized overflow lock: prevent background scrolling when overlays are open
+  useEffect(() => {
+    const anyOpen = !!(quickViewItem || isMobileMenuOpen || isFavOpen || isHistoryOpen || isCartOpen || isCheckoutOpen || isAdminPanelOpen || isFiltersOpen || isBillModalOpen || isStatusOpen);
+    const prev = document.body.style.overflow;
+    if (anyOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = prev;
+    return () => { document.body.style.overflow = prev; };
+  }, [quickViewItem, isMobileMenuOpen, isFavOpen, isHistoryOpen, isCartOpen, isCheckoutOpen, isAdminPanelOpen, isFiltersOpen, isBillModalOpen, isStatusOpen]);
 
   useEffect(() => {
     if (!isMobileMenuOpen) return;
@@ -3251,7 +3335,11 @@ const handlePlaceOrder = (discountAmount) => {
           recentlyOrdered={recentlyOrdered}
           dietFilter={dietFilter}
           setDietFilter={setDietFilter}
+          activeFilters={activeFilters}
+          onOpenFilters={() => setIsFiltersOpen(true)}
         />
+
+        <FiltersModal isOpen={isFiltersOpen} onClose={() => setIsFiltersOpen(false)} activeFilters={activeFilters} setActiveFilters={setActiveFilters} />
 
         <FloatingCartBar 
           cartCount={cartItemCount} 
