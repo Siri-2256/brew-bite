@@ -2174,7 +2174,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                     </div>
                   ) : (
                     <button
-                      onClick={() => onQuickView(item, 'recently-viewed')}
+                      onClick={() => handleViewItem(item)}
                       className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] hover:bg-[#6F4E37] dark:hover:bg-[#D4B895] hover:text-white dark:hover:text-[#12100E] transition-colors flex items-center justify-center gap-2"
                     >
                       <Plus size={16}/> Add+
