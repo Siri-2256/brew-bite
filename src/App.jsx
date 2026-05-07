@@ -790,11 +790,11 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative w-full max-w-5xl max-h-[95vh] overflow-y-auto md:overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl flex flex-col md:flex-row animate-slide-down`}>
         
-        <button onClick={onClose} className="sticky top-4 right-4 ml-auto z-20 p-2 bg-white/50 dark:bg-black/50 backdrop-blur-md rounded-full hover:bg-white dark:hover:bg-black transition-colors text-[#2D241E] dark:text-white shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
-          <X size={20} />
-        </button>
-        <button onClick={handleFav} className="sticky top-4 right-16 z-20 p-2 bg-white/50 dark:bg-black/50 backdrop-blur-md rounded-full hover:bg-white dark:hover:bg-black transition-colors shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
+        <button onClick={handleFav} className="absolute top-4 right-16 z-30 p-2 bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-black transition-colors shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
           <Heart size={20} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
+        </button>
+        <button onClick={onClose} className="absolute top-4 right-4 z-30 p-2 bg-[#F3ECE7] dark:bg-[#2E2A28] rounded-full hover:bg-opacity-95 transition-colors text-[#2D241E] dark:text-white shadow-sm min-h-[48px] min-w-[48px] flex items-center justify-center">
+          <X size={20} />
         </button>
 
         <div className="w-full md:w-1/2 md:max-h-[95vh] md:overflow-hidden relative bg-black/5 dark:bg-white/5">
@@ -806,7 +806,7 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
           )}
         </div>
         
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start md:overflow-y-auto md:max-h-[95vh] hide-scrollbar">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start md:overflow-y-auto md:max-h-[95vh] hide-scrollbar relative">
           <div className="flex items-center gap-2 mb-3">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 ${THEME.primaryText}`}>{item.category}</span>
             <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${item.type === 'Non-Veg' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}`}>
@@ -892,10 +892,10 @@ const QuickViewModal = ({ item, isOpen, onClose, addToCart, toggleFavorite, favo
             <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="e.g. Less ice, extra spicy..." className={`w-full p-3 rounded-xl border ${THEME.border} bg-transparent outline-none focus:border-[#6F4E37] text-sm text-[#2D241E] dark:text-white resize-none h-20`} />
           </div>
 
-          <div className="sticky bottom-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-inherit flex items-center justify-between gap-6 z-20">
+          <div className="sticky bottom-0 mt-6 pt-6 border-t border-black/10 dark:border-white/10 bg-white dark:bg-[#1C1917] flex items-center justify-between gap-6 z-30 backdrop-blur-sm">
             <span className="text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
             <button onClick={handleAdd} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-xl hover:scale-105 active:scale-95 ${THEME.primary}`}>
-              Add+ <Plus size={20} />
+              Add+
             </button>
           </div>
         </div>
@@ -2026,7 +2026,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#FAF7F2] dark:bg-[#12100E] p-4 sm:p-6 animate-fade-in">
       <div className={`relative w-full max-w-5xl h-full max-h-[95vh] overflow-hidden ${THEME.cardBg} rounded-3xl shadow-2xl p-6 md:p-10 flex flex-col`}>
-        <div className="flex justify-between items-center gap-3 mb-4 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-20 py-4">
+        <div className="relative flex justify-between items-center gap-3 mb-4 border-b border-black/10 dark:border-white/10 pb-4 sticky top-0 bg-white dark:bg-[#1C1917] z-20 py-4">
           <h2 className="text-2xl sm:text-3xl font-black text-[#2D241E] dark:text-white flex items-center gap-2 sm:gap-3"><Heart size={28} className="text-red-500 fill-red-500"/> My Favorites</h2>
           <div className="flex items-center gap-2">
             <button
@@ -2035,9 +2035,7 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
             >
               View Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})
             </button>
-            <button onClick={onClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center">
-               <X size={24} className="text-[#2D241E] dark:text-white" />
-            </button>
+            <button onClick={onClose} className="sr-only" aria-hidden="true">Close</button>
           </div>
         </div>
 
@@ -2050,16 +2048,16 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
         <div className="flex-1 overflow-y-auto hide-scrollbar pr-1">
         {viewingItem ? (
           <div className="flex flex-col h-full min-h-0">
-            <div className="flex items-center justify-between gap-3 pb-4 border-b border-black/10 dark:border-white/10 sticky top-0 bg-inherit z-20">
+            <div className="relative flex items-center justify-between gap-3 pb-4 border-b border-black/10 dark:border-white/10 sticky top-0 bg-inherit z-20">
               <button onClick={handleCloseItem} className="flex items-center gap-2 text-[#6F4E37] dark:text-[#D4B895] font-bold hover:underline min-h-[44px] px-2">
                 <ChevronLeft size={20} /> Back to Favorites
               </button>
-              <div className="flex items-center gap-2">
-                <button onClick={handleCloseItem} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Close item view">
-                  <X size={24} className="text-[#2D241E] dark:text-white" />
-                </button>
-                <button onClick={handleFavToggle} className="p-2 bg-red-50 dark:bg-red-900/20 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" title="Toggle favorite">
+              <div className="relative">
+                <button onClick={handleFavToggle} className="absolute top-2 -right-14 z-40 p-2 bg-white/90 dark:bg-black/80 rounded-full shadow-sm flex items-center justify-center min-h-[48px] min-w-[48px] hover:bg-white transition-colors" title="Toggle favorite">
                   <Heart size={24} fill={isFav ? '#ef4444' : 'transparent'} className={isFav ? 'text-red-500' : 'text-[#2D241E] dark:text-white'} />
+                </button>
+                <button onClick={handleCloseItem} className="absolute top-2 right-2 z-40 p-2 bg-[#F3ECE7] dark:bg-[#2E2A28] rounded-full shadow-sm flex items-center justify-center min-h-[48px] min-w-[48px] hover:bg-opacity-95 transition-colors" title="Close item view">
+                  <X size={24} className="text-[#2D241E] dark:text-white" />
                 </button>
               </div>
             </div>
@@ -2119,10 +2117,10 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
               </div>
             </div>
 
-            <div className="pt-4 border-t border-black/10 dark:border-white/10 sticky bottom-0 bg-inherit z-20 flex items-center justify-between gap-4">
+            <div className="pt-4 border-t border-black/10 dark:border-white/10 sticky bottom-0 bg-white dark:bg-[#1C1917] z-30 flex items-center justify-between gap-4 backdrop-blur-sm">
               <span className="text-3xl sm:text-4xl font-bold text-[#2D241E] dark:text-white">{formatPrice(currentPrice)}</span>
               <button onClick={handleAddToCart} className={`flex-1 py-4 min-h-[48px] rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-transform shadow-lg hover:scale-105 active:scale-95 ${THEME.primary}`}>
-                Add+ <Plus size={20} />
+                Add+
               </button>
             </div>
           </div>
@@ -2175,9 +2173,9 @@ const FavoritesPage = ({ favorites, cart, isFavOpen, onClose, onViewCart, addToC
                   ) : (
                     <button
                       onClick={() => handleViewItem(item)}
-                      className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] hover:bg-[#6F4E37] dark:hover:bg-[#D4B895] hover:text-white dark:hover:text-[#12100E] transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 min-h-[48px] mt-auto rounded-xl font-bold border-2 border-[#6F4E37] text-[#6F4E37] dark:border-[#D4B895] dark:text-[#D4B895] hover:bg-[#6F4E37] dark:hover:bg-[#D4B895] hover:text-white dark:hover:text-[#12100E] transition-colors flex items-center justify-center"
                     >
-                      <Plus size={16}/> Add+
+                      Add+
                     </button>
                   );
                 })()}
